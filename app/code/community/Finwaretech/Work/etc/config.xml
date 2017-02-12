@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Finwaretech_Work>
+			<version>0.1.0</version>
+		</Finwaretech_Work>
+	</modules>
+	  <global>
+        <!-- We need model -->
+        <models>
+            <Finwaretech_Work>
+                <class>Finwaretech_Work_Model</class>
+            </Finwaretech_Work>
+        </models>
+        <!-- We need helper -->
+        <helpers>
+            <Finwaretech_Work>
+                <class>Finwaretech_Work_Helper</class>
+            </Finwaretech_Work>
+        </helpers>
+    </global>
+	 <frontend>
+        <routers>
+            <work>
+                <use>standard</use>
+                <args>
+                    <module>Finwaretech_Work</module>
+                    <frontName>work</frontName>
+                </args>
+            </work>
+        </routers>
+        
+        <layout>
+    		<updates>
+	    		<work>
+	    			<file>work.xml</file>
+	    		</work>
+	    	</updates>
+    	</layout>
+	</frontend>
+</config>

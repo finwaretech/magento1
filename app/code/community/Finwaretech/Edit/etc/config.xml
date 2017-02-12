@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Finwaretech_Edit>
+			<version>0.1.0</version>
+		</Finwaretech_Edit>
+	</modules>
+	  <global>
+        <!-- We need model -->
+        <models>
+            <Finwaretech_Edit>
+                <class>Finwaretech_Edit_Model</class>
+            </Finwaretech_Edit>
+        </models>
+        <!-- We need helper -->
+        <helpers>
+            <Finwaretech_Edit>
+                <class>Finwaretech_Edit_Helper</class>
+            </Finwaretech_Edit>
+        </helpers>
+    </global>
+	 <frontend>
+        <routers>
+            <edit>
+                <use>standard</use>
+                <args>
+                    <module>Finwaretech_Edit</module>
+                    <frontName>edit</frontName>
+                </args>
+            </edit>
+        </routers>
+        
+        <layout>
+    		<updates>
+	    		<edit>
+	    			<file>edit.xml</file>
+	    		</edit>
+	    	</updates>
+    	</layout>
+	</frontend>
+</config>

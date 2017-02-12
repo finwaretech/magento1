@@ -1,0 +1,2731 @@
+ <!-- Heading of the page -->
+<h1><?php echo $this->__('Add Interactivity') ?></h1>
+
+<?php
+	// Function to remove index.php from the url
+    function curPageURL() 
+    {
+        $pageURL = 'http';
+        if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+        $pageURL .= "://";
+        if ($_SERVER["SERVER_PORT"] != "80") {
+        $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+        } else {
+        $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+        }
+        return $pageURL;
+    }
+
+    $curUrl = curPageURL();
+    $pos = strpos($curUrl, "index.php");
+
+    // Note our use of ===.  Simply == would not work as expected
+    // because the position of 'a' was the 0th (first) character.
+    if ($pos === false) {
+    //echo "The string '$findme' was not found in the string '$mystring'";
+    } else {
+    //echo "The string '$findme' was found in the string '$mystring'";
+    //echo " and exists at position $pos";
+    $newUrl = str_replace("index.php/", "", $curUrl);
+    header("Location: $newUrl");
+    exit;
+    }
+?>
+<!-- Fetching product id -->
+<?php
+  if(isset($_GET['id']))
+  {
+    // echo "product id =". $_GET['id'];
+    $product = $_GET['id'];  // Getting product id
+  }
+?>
+
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script type="text/javascript" src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+	<style type="text/css">
+
+	    .squarebox {
+	      margin-bottom: 10px;
+	      width: 100%;
+	      border: solid 1px #336699;
+	      text-align: center;
+	      overflow: hidden; 
+	      background-color: #f3f2f9;
+	    }
+	    .squarebox:hover {
+	      background-color: #eeeeee;
+	    }
+	    .squareboxgradientcaption {
+	      color: #ffffff;
+	      padding: 5px;   
+	    }
+	    .squareboxcontent {
+	      background-color: #f5f5f5;
+	      padding: 10px;
+	      overflow: hidden;
+	      border-top: solid 1px #336699; 
+	    }
+	    .input-box {
+	      background-image: url(<?php echo $this->getSkinUrl('images/add/DnD.png'); ?>);
+	      border: dashed 1px #336699;
+	      background-size: cover;
+	      background-repeat:no-repeat;
+	      padding-right: 460px;
+	      margin-left: 79px;
+	      margin-right: 66px;
+	    }
+	    input.dnd {
+	      opacity: 0;
+	      width: 60em;  
+	      height: 10em;
+	  
+	    }
+	    .button {
+	       background-color: #008CBA; 
+	       border: none;
+	       color: white;
+	       padding: 10px 22px;
+	       text-align: center;
+	       text-decoration: none;
+	       display: inline-block;
+	       font-size: 14px;
+	       cursor: pointer;
+	       border-radius: 4px;
+	    }
+	    .button_effect:hover:active{
+	        box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+	    }
+	    .rectangle {
+	        border: 1px solid #FF0000;
+	        position: absolute;
+	    }
+	    .panel-body {
+	      	display: none;
+	    }
+
+	    button.accordion {
+	        background-color: #eee;
+	        color: #444;
+	        cursor: pointer;
+	        padding: 18px;
+	        width: 100%;
+	        border: none;
+	        text-align: left;
+	        outline: none;
+	        font-size: 15px;
+	        transition: 0.4s;
+	    }
+
+	    button.accordion.active, button.accordion:hover {
+	        background-color: #ddd;
+	    }
+
+	    div.panel {
+	        padding: 0 18px;
+	        display: none;
+	        background-color: #f8f8f8;
+	        transition: 0.6s ease-in-out;
+	    }
+
+	    div.panel.show {
+	      display: block;
+	    } 
+
+	    .sortables_div ul{
+	      list-style: none;
+	    }
+
+	    .sortables_div li{
+	      display: inline;
+	    }
+
+	    .audio_img {
+	      background-image: url(<?php echo $this->getSkinUrl('images/add/audio.jpg'); ?>);
+	      background-size: cover;
+	      background-repeat:no-repeat;
+	      background-size: 100% 100%;
+	      width: 100%;
+	      height: 92px;
+	    }
+
+	    .hotspot_audio_img {
+	      background-image: url(<?php echo $this->getSkinUrl('images/add/audio.jpg'); ?>);
+	      background-size: cover;
+	      background-repeat:no-repeat;
+	      background-size: 100% 100%;
+	      width: 100%;
+	      height: 92px;
+	    }
+
+	    .hotspot_img_sound_play, .hotspot_img_sound_pause {
+	      position: relative;
+	      height: 35px;
+	      border-top-width: 50px;
+	      padding-top: 8px;
+	      padding-left: 0px;
+	      margin-right: 45%;
+	      margin-left: 46%;
+	    }
+
+	    .img_sound_play, .img_sound_pause {
+	      position: relative;
+	      height: 35px;
+	      border-top-width: 50px;
+	      padding-top: 8px;
+	      padding-left: 0px;
+	      margin-right: 45%;
+	      margin-left: 46%;
+	    }
+		
+	    .video {
+	    	width: 100%;
+	    	border: 1px solid black;
+		  }
+	    .hotspot_video {
+	      width: 100%;
+	      border: 1px solid black;
+	    }
+		.wrapper {
+			  min-width:0px !important;
+	    	position:relative;
+		}
+		.playpause {
+		    background-image:url(<?php echo $this->getSkinUrl('images/add/play_video.png'); ?>);
+		    background-repeat:no-repeat;
+		    width:50%;
+		    height:50%;
+		    position:absolute;
+		    left:0%;
+		    right:0%;
+		    top:0%;
+		    bottom:0%;
+		    margin:auto;
+		    background-size:contain;
+		    background-position: center;
+		 }
+	    .hotspot_playpause {
+	      background-image:url(<?php echo $this->getSkinUrl('images/add/play_video.png'); ?>);
+	      background-repeat:no-repeat;
+	      width:50%;
+	      height:50%;
+	      position:absolute;
+	      left:0%;
+	      right:0%;
+	      top:0%;
+	      bottom:0%;
+	      margin:auto;
+	      background-size:contain;
+	      background-position: center;
+	    }
+
+	    .image-container {
+	      position: relative;
+	      width: 100px;
+	      height: 100px;
+	    }
+	    .image-container .after {
+	      position: absolute;
+	      top: 0;
+	      left: 0;
+	      width: 100%;
+	      height: 100%;
+	      display: none;
+	      color: #FFF;
+	    }
+	    .image-container:hover .after {
+	      display: inline;
+	      background: rgba(0, 0, 0, .6);
+	    }
+
+	    .hotspot_image-container {
+	      position: relative;
+	      width: 100px;
+	      height: 100px;
+	    }
+	    .hotspot_image-container .after {
+	      position: absolute;
+	      top: 0;
+	      left: 0;
+	      width: 100%;
+	      height: 100%;
+	      display: none;
+	      color: #FFF;
+	    }
+	    .hotspot_image-container:hover .after {
+	      display: inline;
+	      background: rgba(0, 0, 0, .6);
+	    }
+	    .delete_button {
+	      width:8%;
+	      height:55.5px;
+	      float:right;
+	      padding-bottom:20px;
+	      display: none;
+	    }
+	    .delete_button_hotspot {
+	      width:8%;
+	      height:55.5px;
+	      float:right;
+	      padding-bottom:20px;
+	      display: none;
+	    }
+	    .zoom_button_class{
+	    	display: none;
+	    }
+
+    .cssload-loader {
+      width: 244px;
+      height: 49px;
+      z-index: 9998;
+      line-height: 49px;
+      text-align: center;
+      /*margin: 0 auto;*/
+      margin-left: 50%;
+      margin-top: 49px;
+      position: relative;
+      /*left: 50%;*/
+      transform: translate(-50%, -50%);
+        -o-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+        -moz-transform: translate(-50%, -50%);
+      font-family: helvetica, arial, sans-serif;
+      text-transform: uppercase;
+      font-weight: 900;
+      font-size:15px;
+      color: rgb(51,121,183);
+      letter-spacing: 0.2em;
+    }
+    .cssload-loader::before, .cssload-loader::after {
+      content: "";
+      display: block;
+      width: 15px;
+      height: 15px;
+      background: rgb(51,121,183);
+      position: absolute;
+      animation: cssload-load 0.81s infinite alternate ease-in-out;
+        -o-animation: cssload-load 0.81s infinite alternate ease-in-out;
+        -ms-animation: cssload-load 0.81s infinite alternate ease-in-out;
+        -webkit-animation: cssload-load 0.81s infinite alternate ease-in-out;
+        -moz-animation: cssload-load 0.81s infinite alternate ease-in-out;
+    }
+    .cssload-loader::before {
+      top: 0;
+    }
+    .cssload-loader::after {
+      bottom: 0;
+    }
+
+
+
+    @keyframes cssload-load {
+      0% {
+        left: 0;
+        height: 29px;
+        width: 15px;
+      }
+      50% {
+        height: 8px;
+        width: 39px;
+      }
+      100% {
+        left: 229px;
+        height: 29px;
+        width: 15px;
+      }
+    }
+
+    @-o-keyframes cssload-load {
+      0% {
+        left: 0;
+        height: 29px;
+        width: 15px;
+      }
+      50% {
+        height: 8px;
+        width: 39px;
+      }
+      100% {
+        left: 229px;
+        height: 29px;
+        width: 15px;
+      }
+    }
+
+    @-ms-keyframes cssload-load {
+      0% {
+        left: 0;
+        height: 29px;
+        width: 15px;
+      }
+      50% {
+        height: 8px;
+        width: 39px;
+      }
+      100% {
+        left: 229px;
+        height: 29px;
+        width: 15px;
+      }
+    }
+
+    @-webkit-keyframes cssload-load {
+      0% {
+        left: 0;
+        height: 29px;
+        width: 15px;
+      }
+      50% {
+        height: 8px;
+        width: 39px;
+      }
+      100% {
+        left: 229px;
+        height: 29px;
+        width: 15px;
+      }
+    }
+
+    @-moz-keyframes cssload-load {
+      0% {
+        left: 0;
+        height: 29px;
+        width: 15px;
+      }
+      50% {
+        height: 8px;
+        width: 39px;
+      }
+      100% {
+        left: 229px;
+        height: 29px;
+        width: 15px;
+      }
+    }
+
+     .cssload-thecube {
+      width: 73px;
+      height: 73px;
+      z-index: 9997;
+      /*margin: 0 auto;*/
+      margin-left: 40%;
+      margin-top: 49px;
+      position: relative;
+      transform: rotateZ(45deg);
+        -o-transform: rotateZ(45deg);
+        -ms-transform: rotateZ(45deg);
+        -webkit-transform: rotateZ(45deg);
+        -moz-transform: rotateZ(45deg);
+    }
+    .cssload-thecube .cssload-cube {
+      position: relative;
+      transform: rotateZ(45deg);
+        -o-transform: rotateZ(45deg);
+        -ms-transform: rotateZ(45deg);
+        -webkit-transform: rotateZ(45deg);
+        -moz-transform: rotateZ(45deg);
+    }
+    .cssload-thecube .cssload-cube {
+      float: left;
+      width: 50%;
+      height: 50%;
+      position: relative;
+      transform: scale(1.1);
+        -o-transform: scale(1.1);
+        -ms-transform: scale(1.1);
+        -webkit-transform: scale(1.1);
+        -moz-transform: scale(1.1);
+    }
+    .cssload-thecube .cssload-cube:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgb(43,160,199);
+      animation: cssload-fold-thecube 2.76s infinite linear both;
+        -o-animation: cssload-fold-thecube 2.76s infinite linear both;
+        -ms-animation: cssload-fold-thecube 2.76s infinite linear both;
+        -webkit-animation: cssload-fold-thecube 2.76s infinite linear both;
+        -moz-animation: cssload-fold-thecube 2.76s infinite linear both;
+      transform-origin: 100% 100%;
+        -o-transform-origin: 100% 100%;
+        -ms-transform-origin: 100% 100%;
+        -webkit-transform-origin: 100% 100%;
+        -moz-transform-origin: 100% 100%;
+    }
+    .cssload-thecube .cssload-c2 {
+      transform: scale(1.1) rotateZ(90deg);
+        -o-transform: scale(1.1) rotateZ(90deg);
+        -ms-transform: scale(1.1) rotateZ(90deg);
+        -webkit-transform: scale(1.1) rotateZ(90deg);
+        -moz-transform: scale(1.1) rotateZ(90deg);
+    }
+    .cssload-thecube .cssload-c3 {
+      transform: scale(1.1) rotateZ(180deg);
+        -o-transform: scale(1.1) rotateZ(180deg);
+        -ms-transform: scale(1.1) rotateZ(180deg);
+        -webkit-transform: scale(1.1) rotateZ(180deg);
+        -moz-transform: scale(1.1) rotateZ(180deg);
+    }
+    .cssload-thecube .cssload-c4 {
+      transform: scale(1.1) rotateZ(270deg);
+        -o-transform: scale(1.1) rotateZ(270deg);
+        -ms-transform: scale(1.1) rotateZ(270deg);
+        -webkit-transform: scale(1.1) rotateZ(270deg);
+        -moz-transform: scale(1.1) rotateZ(270deg);
+    }
+    .cssload-thecube .cssload-c2:before {
+      animation-delay: 0.35s;
+        -o-animation-delay: 0.35s;
+        -ms-animation-delay: 0.35s;
+        -webkit-animation-delay: 0.35s;
+        -moz-animation-delay: 0.35s;
+    }
+    .cssload-thecube .cssload-c3:before {
+      animation-delay: 0.69s;
+        -o-animation-delay: 0.69s;
+        -ms-animation-delay: 0.69s;
+        -webkit-animation-delay: 0.69s;
+        -moz-animation-delay: 0.69s;
+    }
+    .cssload-thecube .cssload-c4:before {
+      animation-delay: 1.04s;
+        -o-animation-delay: 1.04s;
+        -ms-animation-delay: 1.04s;
+        -webkit-animation-delay: 1.04s;
+        -moz-animation-delay: 1.04s;
+    }
+
+
+
+    @keyframes cssload-fold-thecube {
+      0%, 10% {
+        transform: perspective(136px) rotateX(-180deg);
+        opacity: 0;
+      }
+      25%,
+            75% {
+        transform: perspective(136px) rotateX(0deg);
+        opacity: 1;
+      }
+      90%,
+            100% {
+        transform: perspective(136px) rotateY(180deg);
+        opacity: 0;
+      }
+    }
+
+    @-o-keyframes cssload-fold-thecube {
+      0%, 10% {
+        -o-transform: perspective(136px) rotateX(-180deg);
+        opacity: 0;
+      }
+      25%,
+            75% {
+        -o-transform: perspective(136px) rotateX(0deg);
+        opacity: 1;
+      }
+      90%,
+            100% {
+        -o-transform: perspective(136px) rotateY(180deg);
+        opacity: 0;
+      }
+    }
+
+    @-ms-keyframes cssload-fold-thecube {
+      0%, 10% {
+        -ms-transform: perspective(136px) rotateX(-180deg);
+        opacity: 0;
+      }
+      25%,
+            75% {
+        -ms-transform: perspective(136px) rotateX(0deg);
+        opacity: 1;
+      }
+      90%,
+            100% {
+        -ms-transform: perspective(136px) rotateY(180deg);
+        opacity: 0;
+      }
+    }
+
+    @-webkit-keyframes cssload-fold-thecube {
+      0%, 10% {
+        -webkit-transform: perspective(136px) rotateX(-180deg);
+        opacity: 0;
+      }
+      25%,
+            75% {
+        -webkit-transform: perspective(136px) rotateX(0deg);
+        opacity: 1;
+      }
+      90%,
+            100% {
+        -webkit-transform: perspective(136px) rotateY(180deg);
+        opacity: 0;
+      }
+    }
+
+    @-moz-keyframes cssload-fold-thecube {
+      0%, 10% {
+        -moz-transform: perspective(136px) rotateX(-180deg);
+        opacity: 0;
+      }
+      25%,
+            75% {
+        -moz-transform: perspective(136px) rotateX(0deg);
+        opacity: 1;
+      }
+      90%,
+            100% {
+        -moz-transform: perspective(136px) rotateY(180deg);
+        opacity: 0;
+      }
+    }
+    #loading_page {
+    	background-color: rgba(255,255,255,1);
+    	z-index: 999;
+    	height: 1000px;
+        width: 100%;
+    }
+
+	</style>
+</head>
+
+<body>
+  <div style="display: none" id="loading_page">
+  <!-- <div class="cssload-thecube">
+    <div class="cssload-cube cssload-c1"></div>
+    <div class="cssload-cube cssload-c2"></div>
+    <div class="cssload-cube cssload-c4"></div>
+    <div class="cssload-cube cssload-c3"></div>
+    
+  </div> --><br><br>
+    <div class="cssload-loader" id="loading_page_heading" ></div>
+  </div>
+  <br>
+  <!-- Customization for button and heading color start (Common for both hotspot and button bar) -->
+	<div class="squarebox">
+	    <strong style="float: left;padding: 20px;color:#1469C2;font-family:Verdana;font-weight: 900;font-size: 14px;">
+	    CUSTOMIZE</strong><br>
+	    <div id="customize" style="padding-top: 5px;">
+	      <form>
+	        Button Color:&nbsp<input type="text" name="button_color" id="button_color" size="10" list="suggestions" onchange="customize_button();" required>
+	        Button Text Color:&nbsp<input type="text" name="text_color" id="text_color" size="10" list="suggestions" onchange="customize_text();" required>
+	        Band Color:&nbsp<input type="text" name="band_color" id="band_color" size="10" list="suggestions" onchange="customize_band();" required>
+	        <!-- <div> -->
+	       <label class="zoom_button_class">&nbspZoom Button :</label> 
+		        <select name="zoom_button" id="zoom_button" class="zoom_button_class" style="width: 10%;" onchange="customize_zoom();" >
+					<option value="">--select--</option>
+					<option value="0">Yes</option>
+					<option value="1">No</option>
+				</select>
+			<!-- </div> -->
+	      </form>
+	      <datalist id="suggestions">
+	        <option value="Red">
+	        <option value="Green">
+	        <option value="Silver">
+	        <option value="Gold">
+	        <option value="White">
+	        <option value="Black">
+	        <option value="Blue">
+	        <option value="Purple">
+	        <option value="Orange">
+	        <option value="Yellow">
+	      </datalist>
+	    </div><br>
+	</div>
+  <!-- Customization for button and heading color end -->
+
+
+  <!-- Select Button Bar/Hotspot -->
+    <div style="width:50%;text-align:center; float:left; margin-top:10px;">  
+      <p style="font-size:18px;">
+      	<!-- Select Button Bar -->
+        <input type="radio" name="select_button" id="insert_interactivity_button">
+        <strong class="hide_load">Button Bar</strong>
+      </p>
+    </div>
+    <div style="width:50%;text-align:center; float:right; margin-top:10px;">
+      <p style="font-size:18px;">
+      <!-- Select Hotspot -->
+        <input type="radio" name="select_button" id="insert_hotspot_button"> 
+        <strong class="hide_load">Hotspot</strong>
+      </p>
+    </div>
+
+  <!-- Button Bar Start - Chelsea -->
+	    <form id="add_interactivity_form" method="post" enctype="multipart/form-data" action="<?php echo Mage::getUrl('add/admin/save',array('_secure' => true, 'id'=>$product)); ?>">
+	      <div class="container" id="insert_interactivity" style="display:none;">
+	        <div style="width:90%; float:left; display: block;" id="interactivity_0">
+	          <div class="squarebox">
+		          	<!-- Accordian Start -->
+		            <button type="button" class="accordion" id="accordian_0" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900;"> Interactivity 
+		              <input type="text" name="interactivity_name_0" style="width:50%;" required="required">
+		              <div style="float: right; vertical-align: middle; width:4%;">
+		                <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+		              </div>
+		            </button>
+
+		            <div class="panel" id="panel_0" style="">
+		            	<!-- Select Image -->
+		              	<div style="width:50%;text-align:center; float:left; margin-top:10px;">  
+		                	<p style="font-size:18px;">
+		                  		<input type="radio" name="interactivity_select_0" value="images" id="interactivity_images_0" onclick="image_click(0)">
+		                  		<strong>Images</strong>
+		                	</p>
+		              	</div>
+		              	<!-- Select Video -->
+		              	<div style="width:50%;text-align:center; float:right; margin-top:10px;">
+		                	<p style="font-size:18px;">
+		                  		<input type="radio" name="interactivity_select_0" value="video" id="interactivity_video_0" onclick="video_click(0)"> 
+		                  		<strong>Video</strong>
+		                	</p>
+		              	</div>
+
+		              <!--  Upload Images -->
+		              <div id="select_images_0" style="width:100%; display:none;">  
+
+			                <!-- LD Images Upload -->
+			                <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin-top: 10px; margin-bottom:5px;"> IMAGES FOR ROTATION 
+			                  <div style="float: right; vertical-align: middle; width:4%;">
+			                    <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+			                  </div>
+			                </button>
+			                <div class="panel" id="ld_panel_0" style="">
+			                <h3 style="color:grey;position: absolute;margin-top: 190px; margin-left: 15%;"><strong>DRAG AND DROP OR CLICK TO ADD IMAGES</strong></h3>
+			                  <div id="input_ld_0">
+			                  	<!-- Choose ld image button -->			                  	
+			                    <input multiple="true" onchange="readURL_ld(this,0);" id="uploadedImages_ld_0_0" name="pictures_ld_0_0[]" type="file" style="width:100%; height:60px;">
+			                  </div>
+			                  
+			                  <div id="" class="sortables-inside sortables_div">
+			                    <ul id="up_ld_images_0" class="sortable" onmouseout="arrange_order_ld(0)" style="border: dashed 1px #336699;">
+			                    	<!-- LD Images Inserted Here -->
+			                    </ul>
+			                  </div>
+			                  <br>
+			                  <label>Speed of Image Change</label>
+			                  <input type="text" name="ld_image_speed_0">sec
+			                </div>
+
+			                <!-- HD Images Upload -->
+			                <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin: 5px 0;"> IMAGES FOR ZOOM
+			                  <div style="float: right; vertical-align: middle; width:4%;">
+			                    <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+			                  </div>
+			                </button>
+			                <div class="panel" id="hd_panel_0" style="">
+			                <h3 style="color:grey;margin-bottom: 0px;"><strong>DRAG AND DROP OR CLICK TO ADD IMAGES</strong></h3>
+			                  <div id="input_hd_0">
+			                  	<!-- Choose hd image button -->			                  	
+			                    <input multiple="1" onchange="readURL_hd(this,0);" id="uploadedImages_hd_0_0" name="pictures_hd_0_0[]" type="file" style="width:100%; height:60px;">
+			                  </div>
+			         
+			                  <div id="" class="sortables-inside sortables_div">
+			                    <ul id="up_hd_images_0" class="sortable" id="" onmouseout="arrange_order_hd(0)" style="border: dashed 1px #336699;">
+			                    <!-- HD Images Inserted Here -->
+			                    </ul>
+			                  </div> 
+			                  <br>
+			                </div>
+
+			                <!-- Audio Upload -->
+			                <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin-top: 5px; margin-bottom:10px;"> AUDIO 
+			                  <div style="float: right; vertical-align: middle; width:4%;">
+			                    <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+			                  </div>
+			                </button>
+			                <div class="panel" id="audio_panel_0" style="">
+			                  <div style="width:100%; float:left;">
+			                  	<div style="position: relative;">
+				                  	<!-- Choose Audio Button -->
+                            <h3 style="color:grey;position:absolute;margin-left: 25%; margin-top: 2%;" id="audio_drag_head_0"><strong>DRAG AND DROP OR CLICK TO ADD AUDIO</strong></h3>
+				                    <input multiple="0" type="file" id="audio_0" onchange="playFile(this,0)" name="audio_0" type="file" style="width:50%; height:50px;float: left;width: 102%;height: 50px;opacity: 0;">
+				                    <!-- Delete Audio Button -->
+				                    <input type="button" class="button_effect button" name="remove_audio" style="float: right;background-color: red;padding: 3px 3px;opacity: 0.8;font-size: small;display: none;" id="remove_audio_0"  value="Delete audio" onclick="delete_audio(0);">
+				                    
+				                </div>
+			                    <!-- Audio Preview -->
+			                    <div class="audio_img" id="audio_img_0" style="display:none">
+			                      <img class="img_sound_play" id="img_sound_play_0" onClick="audio_play(0)" src="<?php echo $this->getSkinUrl('images/add/play_button.png'); ?>">
+			                      <img class="img_sound_pause" id="img_sound_pause_0" onClick="audio_pause(0)" src="<?php echo $this->getSkinUrl('images/add/audio_pause.png'); ?>" style="display:none" >
+			                    </div> 
+			                    <audio id="sound_0" style="display:none;width:100%" onloadeddata="audio_time(0);" onended="audio_finish(0);">
+			                    </audio>
+			                  </div>
+			                  <br>
+			                  <!-- Audio Play Type - Single/Loop -->
+			                  <div id="audio_play_type_div_0" style="display: none;">
+				                  <label>Play Type</label>
+				                  <select name="audio_play_type_0" id="audio_play_type_0">
+				                    <option value="">Play Type</option>
+				                    <option value="single">Single</option>
+				                    <option value="loop">Loop</option>
+				                  </select>
+			                  </div>
+			                </div>
+<!-- 			                <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin-top: 5px; margin-bottom:10px;"> ZOOM BUTTON 
+			                  <div style="float: right; vertical-align: middle; width:4%;">
+			                    <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+			                  </div>
+			                </button>
+			                <div class="panel" id="zoom_button_panel_0" style="width: 100%" >
+			                	<label style="float: left">Zoom Button:</label>
+			                  	<select name="zoom_button_type_0" id="zoom_button_type_0" style="margin-right: 40%;width: 40%;">
+					                <option value="">--select--</option>
+					                <option value="1">Yes</option>
+					                <option value="0">No</option>
+				                </select>
+			                </div> -->
+			                <br>
+		              </div>  
+
+		              <!--  Upload Video -->
+		              <div id="select_video_0" style="width:100%; display:none;">
+			                <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin: 10px 0;"> VIDEO      
+			                  <div style="float: right; vertical-align: middle; width:4%;">
+			                    <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />    
+			                  </div>
+			                </button>
+			                <div class="panel" id="video_panel_0" style="">
+			                  	<div style="width:100%;float: left;">
+                            <div style="position: relative;" >
+  				                  	<!-- Choose Video Button -->   
+                              <h3 class="video_no_upload_0" id="video_heading_0" style="color:grey;position:absolute;margin-top: 20px;margin-left: 27%;"><strong>DRAG AND DROP OR CLICK TO ADD VIDEO</strong></h3>
+
+  				                    <input type="file" class="video_no_upload_0" onchange="videoplayFile(this,0)" id="videofile_0" name="videofile_0" style="float:left;width: 100%; height: 65px; opacity: 0;" />
+                              <br><br>
+                              <label id="or_label_video_0" class="video_no_upload_0">OR</label>
+  				                    <br /><label id="embed_label_video_0" class="video_no_upload_0" >Embed:</label>
+  				            	    <input type="text" id="video_url_0" name="video_url_0" class="video_no_upload_0" style="width: 36%;" onkeyup="youtube_url_iframe(0);" onchange="youtube_url_iframe(0);" >
+  				            	    <!-- Delete Audio Button -->
+  				            	    <input type="button" class="button_effect button" name="remove_video" style="float: right;background-color: red;padding: 3px 3px;opacity: 0.8;font-size: small;display: none;" id="remove_video_0"  value="Delete video" onclick="delete_video(0);">
+                            </div>
+  				            	    <br><br>
+  				            	    <!-- Video Preview -->
+				                    <div class="wrapper">
+				                      <video id="video_preview_0" class="video" style="width:100%;display:none" controls onended="video_Ended(0)" ></video>
+				                      <div class="playpause" id="playpause_0"></div>
+				  	  	            </div>
+				                    <div  id="video_iframe_0" style="display:none">
+				                    </div>
+			                 	</div>
+			                  <br>
+			                  <!-- Video Play Type - Single/Loop -->
+			                  <label id="play_type_label_0" style="display: none;" >Play Type</label>
+			                  <select style="display: none;" id="video_play_type_0" name="video_play_type_0">
+			                    <option value="">Play Type</option>
+			                    <option value="single">Single</option>
+			                    <option value="loop">Loop</option>
+			                  </select>
+			                </div>
+			                <br>
+		              </div>  
+		            </div>
+		            <!-- Accordian End -->
+	          </div>
+
+	          <!-- Hidden Input to Pass Values to Controller -->
+	          <input type="text" id="sort_order_ld_0" name="sort_order_ld_0" hidden="true">
+	          <input type="text" id="no_of_ld_click_0" name="no_of_ld_click_0" hidden="true">
+	          <input type="text" id="sort_order_hd_0" name="sort_order_hd_0" hidden="true">
+	          <input type="text" id="no_of_hd_click_0" name="no_of_hd_click_0" hidden="true">
+	          <input type="text" id="url_youtube_0" name="url_youtube_0" hidden="true">
+	          <input type="text" id="audio_duration_0" name="audio_duration_0" hidden="true">
+	          <br>
+	          <!-- Submit Button -->
+	          <input type="button" class="button_effect button" id="submit_0" value="Submit" style="margin-left:44%" title="<?php echo $this->__('Save'); ?>" onclick="vaildation();" /> 
+	        </div>
+	        <!-- Delete Interactivity Button -->
+	        <div id="delete_button_0" class="delete_button">
+	          <div class="squarebox" style="height:100%;">
+	            <button type="button" id="delete_interactivity_0" style="height:100%;" onclick="deleteFields(0)">
+	              <img  src="<?php echo $this->getSkinUrl('images/add/cross1.png'); ?>" style="width:41%; height:22px;opacity: 0.8;" border="0"  alt="Delete" title="Delete" />
+	            </button>
+	          </div>
+	        </div>
+	        <!-- Add Interactivity Button -->
+	        <div style="width:8%; height:55.5px; float:right;padding-bottom:20px;" id="add_button">
+	          <div class="squarebox" style="height:100%;">
+	            <button type="button" id="add_interactivity" style="height:100%;" onclick="moreFields()">
+	              <img  src="<?php echo $this->getSkinUrl('images/add/plus1.png'); ?>" style="width:50%; height:30px;" border="0"  alt="Show/Hide" title="Show/Hide" />
+	            </button>
+	          </div>
+	        </div>
+	        <!-- Hidden Input to Pass Values to Controller -->
+	        <input type="number" id="interactivity_counter" name="interactivity_counter" value="1" hidden="true">
+	        <input type="text" id="text_color_interactivity" name="text_color_interactivity" hidden="true">
+	        <input type="text" id="button_color_interactivity" name="button_color_interactivity" hidden="true" >
+	        <input type="text" id="band_color_interactivity" name="band_color_interactivity" hidden="true">
+	        <input type="text" id="zoom_button_type" name="zoom_button_type" hidden="true">
+	        <input type="text" id="deleted_interactivity" name="deleted_interactivity" hidden="true">
+	        <input type="text" id="array_of_interactivity" name="array_of_interactivity" value="0" hidden="true">
+	      </div>
+	    </form>
+  <!-- Button Bar Stop - Chelsea -->
+
+
+  <!-- Hotspot Interactivity Start - Reethu -->
+	    <div style="width:100%; display:none;" id="insert_hotspot" >
+	      <div class="squarebox">
+	        <div class="squareboxgradientcaption"  style="height:30px;padding-top:16px; cursor: pointer;" onclick="toggle_visibility('toggle')">
+	          <div style="float: left;display: block;margin-left:10px;font-size:15px;color:#1469C2;font-family:Verdana;font-weight: 900;"> ADD HOTSPOT</div>
+	          <div style="float: right; vertical-align: middle;display: block;margin-right:6px;margin-top:5px">
+	            <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" width="13" height="14"  alt="HOT SPOT" title="HOT SPOT" />
+	          </div>
+	        </div>
+	        <div class="squareboxcontent" id="toggle" style="display: none">
+	          <h4 style="margin-left:9%;float:left" id="text_header">Insert Home Image:</h4>
+	          <h4 style="margin-left:9%;float:left;display:none" id="text_header_2">Home Image:</h4>
+	          <form method="post" enctype="multipart/form-data" id="add_hotspot_form" action="<?php echo Mage::getUrl('add/admin/saveUploadFile') ?>">
+	            <ul class="form-list">
+	              <li>
+	                <label for="filename"></label>
+	                <div class="input-box" id="input_box">
+	                  <!-- Hidden Input to Pass Values to Controller -->
+	                  <input id="filename" class="dnd" name="filename" type="file" onchange="loadFile(event)" />
+	                  <input type="text" name="product" value="<?php echo $product ?>" hidden="true">
+	                  <input type="text" name="anchor_tag_input" id="anchor_tag_input" hidden="true">
+	                  <input type="text" name="width_img_input" id="width_img_input" hidden="true">
+	                  <input type="text" name="height_img_input" id="height_img_input" hidden="true">
+	                  <input type="text" name="no_of_hotspot_input" id="no_of_hotspot_input" hidden="true">
+	                  <input type="number" id="hotspot_interactivity_counter" name="hotspot_interactivity_counter" value="1" hidden="true">
+	                  <input type="text" id="array_of_hotspot" name="array_of_hotspot" hidden="true">
+	                  <input type="text" id="deleted_hotspot" name="deleted_hotspot" hidden="true">
+
+	                  <input type="text" id="text_color_hotspot" name="text_color_hotspot" hidden="true">
+	                  <input type="text" id="button_color_hotspot" name="button_color_hotspot" hidden="true">
+	                  <input type="text" id="band_color_hotspot" name="band_color_hotspot" hidden="true">
+	                </div>
+	                <br>
+	              </li>
+	            </ul>
+	            <div id="outer_div" style=" position: relative;">
+	              <div id="div_after_drawing" style="position: absolute;left:10%;"  ></div>
+	              <div id="div_canvas" style="position: absolute;left:10%;"  ></div>
+	              <img id="output" width="80%" height="80%" />
+	            </div>
+
+	            <div id="preview" style="display:none">
+	              <br>
+	              <!-- Draw Hotspot Buttons -->
+	              <div id="buttons">
+	                <input type="button" class="button_effect button" id="start_draw" tile="START DRAWING" onclick="start_drawing();" value="START DRAWING" />
+	                <input type="button" class="button_effect button" id="stop_draw" tile="STOP DRAWING" value="STOP DRAWING"  onclick="stop_drawing();" disabled="true" />
+	              </div><br>  
+	            <!-- <div id="hotspot_list"    style="margin-left: 10%;"></div> -->
+	            <br>
+	      
+	          <div id="interactivity_name" style="visibility: hidden;">
+
+	            <!-- Interactivity - Hotspot -->
+	            <div class="container" id="insert_interactivity" style="padding-left: 10%;padding-right:1.5%">
+	              <div style="width:100%; float:left; display: inline-block;" id="hotspot_interactivity_0">
+	                <div class="squarebox" style="float: left;width: 90%;">
+	                	<!-- Accordian Start -->
+		                <button type="button" class="accordion" id="hotspot_accordian_0" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900;"> Hotspot Name
+		                    <input type="text" name="hotspot_name_0" style="width:50%;display: none" value="Feature 1">
+		                    <input type="text" name="hotspot_title_0" id="hotspot_title_0" style="width:50%;" value="Feature 1" onchange="Set_Title(0);"  onkeyup="Set_Title(0);">
+		                    <div style="float: right; vertical-align: middle; width:4%;">
+		                      <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+		                    </div>
+		                </button>
+
+		                <div class="panel" id="hotspot_panel_0" style="">
+		                	<!-- Select Image -->
+		                    <div style="width:50%;text-align:center; float:left; margin-top:10px;">
+			                    <p style="font-size:18px;">
+			                        <input type="radio" name="hotspot_select_0" value="images" id="hotspot_images_0" onclick="image_click_hotspot(0)">
+			                        <strong>Images</strong>
+			                    </p>
+		                    </div>
+		                    <!-- Select Video -->
+		                    <div style="width:50%;text-align:center; float:right; margin-top:10px;">
+		                      <p style="font-size:18px;">
+		                        <input type="radio" name="hotspot_select_0" value="video" id="hotspot_video_0" onclick="video_click_hotspot(0)"> 
+		                        <strong>Video</strong>
+		                      </p>
+		                    </div>
+
+		                    <!--  Upload Images -->
+		                    <div id="hotspot_select_images_0" style="width:100%; display:none;">  
+
+		                      <!--Hotspot LD Images Upload -->
+		                      <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin-top: 10px; margin-bottom:5px;"> IMAGES FOR ROTATION 
+		                        <div style="float: right; vertical-align: middle; width:4%;">
+		                          <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+		                        </div>
+		                      </button>
+		                      <div class="panel" id="hotspot_ld_panel_0" style="">
+                          <h3 style="color:grey;position: absolute;margin-top: 195px; margin-left: 11%;"><strong>DRAG AND DROP OR CLICK TO ADD IMAGES</strong></h3>
+		                      <div id="input_hotspot_ld_0">
+		                      	<!-- Choose LD Image Button -->
+		                        <input multiple="true" onchange="readURL_hotspot_ld(this,0);" id="uploadedImages_hotspot_ld_0_0" name="pictures_hotspot_ld_0_0[]" type="file" style="width:100%; height:60px;">
+		                        </div>
+
+		                        <div id="" class="sortables-inside sortables_div">
+		                          <ul id="up_hotspot_ld_images_0" class="sortable" id="" onmouseout="arrange_order_hotspot_ld(0)" style="border: dashed 1px #336699;">
+		                          	<!-- LD Images Inserted Here -->
+		                          </ul>
+		                        </div>
+		                        <br>
+		                        <label>Speed of Image Change</label>
+		                      <input type="text" name="hotspot_ld_image_speed_0">sec
+		                    </div>
+
+		                      <!--Hotspot HD Images Upload -->
+		                      <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin: 5px 0;"> IMAGES FOR ZOOM		                        <div style="float: right; vertical-align: middle; width:4%;">
+		                          <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+		                        </div>
+		                      </button>
+		                      <div class="panel" id="hotspot_hd_panel_0" style="">
+                          <h3 style="color:grey;margin-bottom: 0px;"><strong>DRAG AND DROP OR CLICK TO ADD IMAGES</strong></h3>
+		                        <div id="input_hotspot_hd_0">
+			                        <!-- Choose HD Image Button -->
+			                        <input multiple="1" onchange="readURL_hotspot_hd(this,0);" id="uploadedImages_hotspot_hd_0_0" name="pictures_hotspot_hd_0_0[]" type="file" style="width:100%; height:60px;">
+		                        </div>
+
+		                        <div id="" class="sortables-inside sortables_div">
+		                          <ul id="up_hotspot_hd_images_0" class="sortable" id="" onmouseout="arrange_order_hotspot_hd(0)" style="border: dashed 1px #336699;">
+		                          	<!-- HD Images Inserted Here -->
+		                          </ul>
+		                        </div> 
+		                        <br>
+		                      </div>
+
+		                      <!--Hotspot Audio Upload -->
+		                      <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin-top: 5px; margin-bottom:10px;"> AUDIO 
+		                        <div style="float: right; vertical-align: middle; width:4%;">
+		                          <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />
+		                        </div>
+		                      </button>
+		                    <div class="panel" id="hotspot_audio_panel_0" style="">
+		                      <div style="width:100%; float:left;">
+		                      	<div style="position: relative;">
+			                      	<!-- Choose Audio Button -->
+                              <h3 style="color:grey;position:absolute;margin-left: 25%; margin-top: 2%;" id="hotspot_audio_drag_head_0"><strong>DRAG AND DROP OR CLICK TO ADD AUDIO</strong></h3>
+			                        <input multiple="0" type="file" id="hotspot_audio_0" onchange="hotspotplayFile(this,0)" name="hotspot_audio_0" type="file" style="width:50%; height:50px;float: left;width: 102%;height: 50px;opacity: 0;">
+			                        <!-- Delete Audio Button -->
+			                        <input type="button" class="button_effect button" name="remove_audio_hotspot" style="float: right;background-color: red;padding: 3px 3px;opacity: 0.8;font-size: small;display: none;" id="remove_audio_hotspot_0"  value="Delete audio" onclick="delete_audio_hotspot(0);">
+			                        
+		                        </div>
+		                        <!-- Audio Preview -->
+		                        <div class="hotspot_audio_img" id="hotspot_audio_img_0" style="display:none">
+		                          <img id="hotspot_img_sound_play_0" class="hotspot_img_sound_play" onClick="hotspot_audio_play(0)" src="<?php echo $this->getSkinUrl('images/add/play_button.png'); ?>">
+		                          <img id="hotspot_img_sound_pause_0" class="hotspot_img_sound_pause" onClick="hotspot_audio_pause(0)" src="<?php echo $this->getSkinUrl('images/add/audio_pause.png'); ?>" style="display:none" >
+		                        </div> 
+		                        <audio id="hotspot_sound_0" style="display:none;width:100%" onloadeddata="hotspot_audio_time(0);" onended="hotspot_audio_finish(0);">
+		                        </audio>
+		                      </div>
+		                      <br>
+		                      <!-- Audio Play Type - Single/Loop -->
+		                      <div id="hotspot_audio_play_type_div_0" style="display: none;">
+			                      <label>Play Type</label>
+			                      <select name="hotspot_audio_play_type_0" id="hotspot_audio_play_type_0">
+			                        <option value="">Play Type</option>
+			                        <option value="single">Single</option>
+			                        <option value="loop">Loop</option>
+			                      </select>
+		                      </div>
+		                    </div>
+		                    <br>
+		                    <!-- Done button in audio div  -->
+		                    <input type="button" class="button_effect button" id="audio_done_button_0" name="done" value="Done" onclick="done_drawing(0);">
+		                   <!--  <input type="button" class="button_effect button" name="cancel" value="Cancel" onclick="cancel_drawing();"> -->
+		                    <br>
+		                  </div>  
+
+		                    <!-- Hotspot Upload Video -->
+		                    <div id="hotspot_select_video_0" style="width:100%; display:none;">
+		                      <button type="button" class="accordion" style="float: left;color:#1469C2;font-family:Verdana;font-weight: 900; margin: 10px 0;"> VIDEO      
+		                        <div style="float: right; vertical-align: middle; width:4%;">
+		                          <img  src="<?php echo $this->getSkinUrl('images/add/down-arrow.png'); ?>" style="width:100%; height:17px; float: right;" border="0"  alt="Show/Hide" title="Show/Hide" />    
+		                        </div>
+		                      </button>
+		                      <div class="panel" id="hotspot_video_panel_0" style="">
+		                        <div style="width:100%">
+                              <!-- <div style="position: relative;" > -->
+  		                          <!-- Choose Video Button -->
+                                <h3 id="hotspot_video_heading_0" class="hotspot_video_no_upload_0" style="color:grey;position:absolute;margin-top: 192px;margin-left: 12%;"><strong>DRAG AND DROP OR CLICK TO ADD VIDEO</strong></h3>
+  		                          <input type="file" class="hotspot_video_no_upload_0" onchange="hotspot_videoplayFile(this,0)" id="hotspot_videofile_0" name="hotspot_videofile_0" style="float:left;width: 100%; height: 65px; opacity: 0;" />
+  		                          
+  		                          <br /><br>
+                                <label id="hotspot_or_label_video_0" class="hotspot_video_no_upload_0">OR</label>
+                              <br /><label id="hotspot_embed_label_video_0" class="hotspot_video_no_upload_0" >Embed:</label>
+  		                          <input type="text" id="hotspot_video_url_0" class="hotspot_video_no_upload_0" name="hotspot_video_url_0" style="width: 36%;" onkeyup="youtube_url_hotspot_iframe(0);" onchange="youtube_url_hotspot_iframe(0);">
+  		                          <!-- Delete Audio Button -->
+  		                          <input type="button" class="button_effect button" name="remove_video_hotspot" style="float: right;background-color: red;padding: 3px 3px;opacity: 0.8;font-size: small;display:none" id="remove_video_hotspot_0"  value="Delete video" onclick="delete_video_hotspot(0);">
+                              <!-- </div> -->
+		                          <br><br>
+		                          <!-- Video Preview -->
+		                          <div id="hotspot_wapper_video_0" class="wrapper">
+		                            <video id="hotspot_video_preview_0" class="hotspot_video" style="width:100%;display:none" controls  onended="hotspot_video_Ended(0)"></video>
+		                            <div class="hotspot_playpause" id="hotspot_playpause_0"></div>
+		                          </div>
+		                          <div id="video_hotspot_iframe_0" style="display:none">
+		                          <!-- <iframe id="video_hotspot_iframe_0"  style="width:100%;display:none" >     
+		                          </iframe> -->
+		                          </div>
+		                        </div>
+		                        <br>
+		                        <!-- Video Play Type - Single/Loop -->
+		                        <label id="hotspot_play_type_label_0" style="display: none;" >Play Type</label>
+		                        <select name="hotspot_video_play_type_0"  style="display: none;" id="hotspot_video_play_type_0">
+		                          <option value="">Play Type</option>
+		                          <option value="single">Single</option>
+		                          <option value="loop">Loop</option>
+		                        </select>
+		                      </div>
+		                      <br>
+		                      <input type="button" class="button_effect button" name="done" id="video_done_button_0"  value="Done" onclick="done_drawing(0);">
+		                      <!-- <input type="button" class="button_effect button" name="cancel" value="Cancel" onclick="cancel_drawing();"> -->   
+		                      <br>
+		                    </div>  
+
+		                </div>
+		                <!-- Accordian End -->
+	                </div>
+	                <!-- Delete Hotspot Button -->
+	                <div id="delete_button_hotspot_0" class="delete_button_hotspot">
+	                  <div class="squarebox" style="height:100%;display:inline-block;">
+	                    <button type="button" id="delete_hotspot_0" class="delete_hotspot_button" style="height:100%;" onclick="deleteFields_hotspot(0)">
+	                      <img  src="<?php echo $this->getSkinUrl('images/add/cross1.png'); ?>" id="hotspot_delete_image" style="width:41%; height:22px;opacity: 0.8;" border="0"  alt="Delete" title="Delete" />
+	                    </button>
+	                  </div>
+	                </div>
+	                <!-- Hidden Input to Pass Values to Controller -->
+	                <input type="text" id="hotspot_sort_order_ld_0" name="hotspot_sort_order_ld_0" hidden="true">
+	                <input type="text" id="hotspot_no_of_ld_click_0" name="hotspot_no_of_ld_click_0" hidden="true">
+	                <input type="text" id="hotspot_sort_order_hd_0" name="hotspot_sort_order_hd_0" hidden="true">
+	                <input type="text" id="hotspot_no_of_hd_click_0" name="hotspot_no_of_hd_click_0" hidden="true">
+	                <input type="text" id="hotspot_url_youtube_0" name="hotspot_url_youtube_0" hidden="true">
+	                <input type="text" id="hotspot_audio_duration_0" name="hotspot_audio_duration_0" hidden="true">
+	                <br>
+
+	              </div>
+	              <!-- Add Hotspot Button -->
+	              <div id="add_hotspot" style="display:none; margin-left: 35%; float: left;margin-right:50%">
+	                <input type="button" class="button_effect button" id="add_hotspot_btn" name="add_more" value="Add more hotspot" onclick="add_more_hotspot();">
+	                <br>
+	              </div>
+	            </div>
+	          </div>
+	         
+	        </div>
+	        <!-- User Manual -->
+	        <div id="notes" class="panel-body" style="display:none;">
+	        <!--  <h5 class="panel-title" style="width: 10%;opacity: 0.6;">Notes:</h5>
+	         <ul style="list-style-type:disc;padding-left:8%;width:150%;opacity: 0.6;">
+	         <li style="width:330px">Click on 'START DRAWING' to draw rectangles on the image.</li>
+	         <li style="width:295px">Click on the image to draw rectangle(<b>DO NOT DRAG</b>).</li>
+	         <li style="width:380px">After drawing a rectangle on the image, click on the 'STOP DRAWING'.</li>
+	         <li style="width:165px"><b>ONE RECTANGLE AT A TIME</b></li>
+	         </ul> -->
+	        </div>
+	        <br>
+	        <div>
+	        <input style="margin-top:4%" type="button" class="button_effect button" value="Submit" id="submit_hotspot" title="<?php echo $this->__('Save'); ?>"  onclick="vaildation_hotspot();" disabled/>
+	        </div>
+	        </form>
+	      </div>
+	      </div>
+	    </div>
+  <!-- Hotspot Interactivity End - Reethu -->
+
+
+  <!-- Button Bar Script Start - Chelsea -->
+	    <script type="text/javascript">
+		    $( function() {
+		      	// Adding a sortable property
+		       	$( ".sortable" ).sortable({ tolerance: 'pointer' });
+		       	// $( "#sortable" ).disableSelection();
+		    } );
+
+	      	// Input Fields Validation
+		    function vaildation()
+		    {
+		        // Interactivity Name Field Validation
+		        var total_interactivity = document.getElementById('interactivity_counter').value;
+		        var flag_interactivity = 0;
+		        var deleted_items_hotspot = document.getElementById('deleted_interactivity').value;
+		        var deleted_items = 0;
+		        // Checking if Deleted Interactivities are Present
+		        if(deleted_items_hotspot != "")
+		        {
+		          var deleted_items_array = deleted_items_hotspot.split(",");
+		          deleted_items = deleted_items_array.length;
+		        
+		          for (var i = 0; i < total_interactivity; i++) 
+		          {
+		            if(deleted_items_array.indexOf(''+i) == -1)
+		            {  
+                  arrange_order_ld(i);
+                  arrange_order_hd(i);            
+		              if( !$("[name='interactivity_name_"+i+"']").val()  ) 
+		              {
+		                flag_interactivity = 1;
+		              }
+		            }
+		          }
+		        }
+		        else
+		        { 
+		          for (var i = 0; i < total_interactivity; i++) 
+		          {
+                arrange_order_ld(i);
+                arrange_order_hd(i); 
+		            if( !$("[name='interactivity_name_"+i+"']").val()  ) 
+		            {
+		              flag_interactivity = 1;
+		            }
+		          }
+		        }
+
+		        // Customization Fields Validation
+		        if( !$('#text_color').val() ) 
+		        {
+		          alert("Please fill text color");
+		        }
+		        else if( !$('#button_color').val() ) 
+		        {
+		          alert("Please fill button color");
+		        }
+		        else if( !$('#band_color').val()  ) 
+		        {
+		          alert("Please fill band color");
+		        }
+		        else if( !$('#zoom_button').val())
+		        {
+		        	alert("Please select zoom button");
+		        }
+		        else if (flag_interactivity == 1) 
+		        {
+		          alert("Please fill interactivity name");
+		        }
+
+
+		        if ($('#band_color').val() && $('#text_color').val() && $('#button_color').val() && flag_interactivity == 0 && $('#zoom_button').val()) 
+		        {
+		          $( "#add_interactivity_form" ).submit();
+		          $("#loading_page").show();
+              document.getElementById('loading_page_heading').innerHTML = "Saving Button Bar";             
+		          window.scrollTo(0,0);
+		          $(".squarebox").hide();
+		          $("#submit_0").hide();
+		          $("#insert_interactivity_button").hide();
+		          $(".hide_load").hide();
+		          $("#insert_hotspot_button").hide();
+  				    $(".cssload-thecube").fadeIn('slow');
+  				    $(".cssload-loader").fadeIn('slow');
+		        }
+
+		    }
+
+		    // Select Button Bar radio
+		    $('#insert_interactivity_button').click(function()
+		    {   
+		        $("#insert_hotspot").css("display","none");
+		        $("#insert_interactivity").css("display","block");
+		        $(".zoom_button_class").css("display","inline");
+		    });
+		    // Select Hotspot Radio
+		    $('#insert_hotspot_button').click(function()
+		    {    
+		        // alert(counter);
+		        $("#insert_interactivity").css("display","none");
+		        $("#insert_hotspot").css("display","block");
+		        $(".zoom_button_class").css("display","none");
+		    });
+
+	      	// Counter - Number of Interactivities
+	      	var counter = 0;
+
+
+	      	// Accordian Selection Function
+		    function accordion_toggle() 
+		    {
+		        var acc = document.getElementsByClassName("accordion");
+		        var i;
+
+		        for (i = 0; i < acc.length; i++) 
+		        {
+		            acc[i].onclick = function()
+		            {
+		                this.classList.toggle("active");
+		                this.nextElementSibling.classList.toggle("show");
+		            }
+		        }
+		    }
+	      	accordion_toggle(); 
+
+	      	// Select Images Interactivity
+		    function image_click(i)
+		    {
+		        $("#select_video_"+i).css("display","none");
+		        $("#select_images_"+i).css("display","block");
+		    }
+		    // Select Video Interactivity
+		    function video_click(i)
+		    {
+		        $("#select_images_"+i).css("display","none");
+		        $("#select_video_"+i).css("display","block");
+		    }
+
+		    // Number of LD Images
+	      	var number_ld = new Array();
+	      	number_ld[0] = 0;
+	      	// Number of LD Images Input Field Clicks
+	      	var ld_click = new Array();
+	      	ld_click[0] = 0;
+	      	// Number of HD Images
+	      	var number_hd = new Array();
+	      	number_hd[0] = 0;
+	      	// Number of HD Images Input Field Clicks
+	      	var hd_click = new Array();
+	      	hd_click[0] = 0;
+	      	// Array in Order of Interactivities
+	      	var array_of_interactivity = new Array();
+	      	array_of_interactivity[0] = 0;
+	      	document.getElementById('array_of_interactivity').value = array_of_interactivity;
+
+
+		    // Add New Interactivity Div
+		    function moreFields() 
+		    {
+		        var flag;
+		        if (document.getElementById('interactivity_images_'+counter).checked) 
+		        {
+		          flag = 1;
+		        }
+		        if (document.getElementById('interactivity_video_'+counter).checked) 
+		        {
+		          flag = 0;
+		        }
+		        if($('#accordian_'+counter).hasClass('active'))  
+		        {
+		          // Returns true if the class exist.
+		          $('#accordian_'+counter).removeClass("active");
+		          $('#panel_'+counter).removeClass("show");
+		        }
+
+		        // Increment Counter when Add New Interactivity Button Clicked
+		        counter++;
+		        number_ld[counter] = 0;
+		        ld_click[counter] = 0;
+		        number_hd[counter] = 0;
+		        hd_click[counter] = 0;
+		        
+		        array_of_interactivity[counter] = counter;
+		      	document.getElementById('array_of_interactivity').value = array_of_interactivity;
+		        document.getElementById('interactivity_counter').value = counter+1;
+		        // Cloning Interactivity
+		        var newFields = document.getElementById('interactivity_'+(counter-1)).cloneNode(true);
+		        // Cloning Delete Button
+		        var delete_button = $( "#delete_button_"+(counter-1) ).clone(true);
+		        delete_button.prop('id','delete_button_'+counter).insertAfter("#interactivity_"+(counter-1));
+		        delete_button.find("#delete_interactivity_"+(counter-1)).attr("id","delete_interactivity_"+counter);
+		        delete_button.find("#delete_interactivity_"+(counter)).attr("onClick","deleteFields("+(counter-1)+")");
+
+		        newFields.id = 'interactivity_'+counter;
+		        newFields.style.display = 'block';
+		        // Naming Child Nodes
+		        var newField = newFields.childNodes;
+		        for (var i=0;i<newField.length;i++) 
+		        {
+		          var theName = newField[i].name
+		          if (theName)
+		            newField[i].name = theName + counter;
+		        }
+
+		        // Reinserting Add Button 
+		        var insertHere = document.getElementById('add_button');
+		        insertHere.parentNode.insertBefore(newFields,insertHere);
+
+		        $("#delete_button_"+counter).addClass("delete_button");
+		        $(".delete_button").css("display","block");
+		        $("#delete_button_0").remove();
+
+		        // Changing Attributes(id,class,name) of Child Nodes
+		        $(newFields).find("#accordian_"+(counter-1)).attr("id","accordian_"+counter);
+
+		        $(newFields).find("#select_images_"+(counter-1)).attr("id","select_images_"+counter);
+		        $(newFields).find("#select_video_"+(counter-1)).attr("id","select_video_"+counter);
+		        $(newFields).find("#interactivity_images_"+(counter-1)).attr("id","interactivity_images_"+counter);
+		        $(newFields).find("#interactivity_video_"+(counter-1)).attr("id","interactivity_video_"+counter);
+		        $(newFields).find("input[name~='interactivity_select_"+(counter-1)+"']").attr("name","interactivity_select_"+counter);
+		        $(newFields).find("input[name~='interactivity_name_"+(counter-1)+"']").attr("name","interactivity_name_"+counter).val("");
+		        $(newFields).find("input[name~='ld_image_speed_"+(counter-1)+"']").attr("name","ld_image_speed_"+counter).val("");
+		        $(newFields).find("#audio_play_type_"+(counter-1)).attr({id: "audio_play_type_"+counter , name: "audio_play_type_"+counter});
+		        // $(newFields).find("#zoom_button_type_"+(counter-1)).attr({id: "zoom_button_type_"+counter , name: "zoom_button_type_"+counter});
+		        
+		        $(newFields).find("#video_play_type_"+(counter-1)).attr({id: "video_play_type_"+counter , name: "video_play_type_"+counter});
+		        $(newFields).find("input[name~='video_url_"+(counter-1)+"']").attr("name","video_url_"+counter).val("");
+		        $(newFields).find("#up_ld_images_"+(counter-1)).attr("id","up_ld_images_"+counter).empty();
+		        $(newFields).find("#up_hd_images_"+(counter-1)).attr("id","up_hd_images_"+counter).empty();
+		        $(newFields).find("input[name~='audio_"+(counter-1)+"']").attr("name","audio_"+counter);
+		        $(newFields).find("input[name~='videofile_"+(counter-1)+"']").attr("name","videofile_"+counter);
+
+		        $(newFields).find("input[name~='audio_img_"+(counter-1)+"']").attr("name","audio_img_"+counter);
+
+		        $(newFields).find("#sort_order_ld_"+(counter-1)).attr({id: "sort_order_ld_"+counter , name: "sort_order_ld_"+counter}).val("");
+		        $(newFields).find("#no_of_ld_click_"+(counter-1)).attr({id: "no_of_ld_click_"+counter , name: "no_of_ld_click_"+counter}).val("");
+		        $(newFields).find("#sort_order_hd_"+(counter-1)).attr({id: "sort_order_hd_"+counter , name: "sort_order_hd_"+counter}).val("");
+		        $(newFields).find("#no_of_hd_click_"+(counter-1)).attr({id: "no_of_hd_click_"+counter , name: "no_of_hd_click_"+counter}).val("");
+		        
+		        $(newFields).find("#audio_duration_"+(counter-1)).attr({id: "audio_duration_"+counter , name: "audio_duration_"+counter}).val("");
+		        $(newFields).find("#url_youtube_"+(counter-1)).attr({id: "url_youtube_"+counter , name: "url_youtube_"+counter}).val("");
+		        $(newFields).find("#video_url_"+(counter-1)).attr("id","video_url_"+counter);
+		        $(newFields).find("#remove_video_"+(counter-1)).attr("id","remove_video_"+counter);
+		        $(newFields).find("#remove_audio_"+(counter-1)).attr("id","remove_audio_"+counter);
+		        $(newFields).find("#videofile_"+(counter-1)).attr("id","videofile_"+counter);
+		        $(newFields).find("#audio_"+(counter-1)).attr("id","audio_"+counter);
+		        $(newFields).find("#video_preview_"+(counter-1)).attr({id: "video_preview_"+counter , src: ""}).css("display","none");
+		        $(newFields).find("#video_preview_"+(counter)).attr("onended","video_Ended("+counter+")");
+		        $(newFields).find("#playpause_"+(counter-1)).attr("id","playpause_"+counter);
+		        
+		        $(newFields).find("#video_iframe_"+(counter-1)).attr({id: "video_iframe_"+counter , src: ""}).css("display","none");
+		        $(newFields).find("#audio_img_"+(counter-1)).attr("id","audio_img_"+counter).css("display","none");
+		        $(newFields).find("#sound_"+(counter-1)).attr({id: "sound_"+counter , src: ""});
+		        $(newFields).find("#sound_"+(counter)).attr("onloadeddata","audio_time("+counter+")");
+		        $(newFields).find("#sound_"+(counter)).attr("onended","audio_finish("+counter+")");
+		        $(newFields).find("#img_sound_pause_"+(counter-1)).attr("id","img_sound_pause_"+counter);
+		        $(newFields).find("#img_sound_play_"+(counter-1)).attr("id","img_sound_play_"+counter);
+		        
+		        $(newFields).find("#input_ld_"+(counter-1)).attr("id","input_ld_"+counter);
+		        $(newFields).find("#input_ld_"+(counter)).empty();
+		        $(newFields).find("#input_ld_"+(counter)).append('<input multiple="true" onchange="readURL_ld(this,'+(counter-1)+');" id="uploadedImages_ld_'+(counter-1)+'_0" name="pictures_ld_'+(counter-1)+'_0[]" type="file" style="width:100%; height:60px;opacity: 0; display:block;">');
+
+		        $(newFields).find("#input_hd_"+(counter-1)).attr("id","input_hd_"+counter);
+		        $(newFields).find("#input_hd_"+(counter)).empty();
+		        $(newFields).find("#input_hd_"+(counter)).append('<input multiple="true" onchange="readURL_hd(this,'+(counter-1)+');" id="uploadedImages_hd_'+(counter-1)+'_0" name="pictures_hd_'+(counter-1)+'_0[]" type="file" style="width:100%; height:60px; display:block;opacity: 0">');
+		        $(newFields).find("#uploadedImages_ld_"+(counter-1)+"_0").attr("id","uploadedImages_ld_"+counter+"_0");  
+		        $(newFields).find("input[name~='pictures_ld_"+(counter-1)+"_0[]']").attr("name","pictures_ld_"+counter+"_0[]");
+		        $(newFields).find("#uploadedImages_hd_"+(counter-1)+"_0").attr("id","uploadedImages_hd_"+counter+"_0");
+		        $(newFields).find("input[name~='pictures_hd_"+(counter-1)+"_0[]']").attr("name","pictures_hd_"+counter+"_0[]");
+
+		        $(newFields).find("#interactivity_video_"+(counter)).attr("onclick","video_click("+counter+")");
+		        $(newFields).find("#interactivity_images_"+(counter)).attr("onclick","image_click("+counter+")");
+
+		        $(newFields).find("#uploadedImages_ld_"+(counter)+"_0").attr("onchange","readURL_ld(this,"+counter+")");
+		        $(newFields).find("#up_ld_images_"+(counter)).attr("onmouseout","arrange_order_ld("+counter+")");
+
+		        $(newFields).find("#uploadedImages_hd_"+(counter)+"_0").attr("onchange","readURL_hd(this,"+counter+")");
+		        $(newFields).find("#up_hd_images_"+(counter)).attr("onmouseout","arrange_order_hd("+counter+")");
+		        
+		        $(newFields).find("#submit_0").attr("id","submit_"+counter);
+		        $("#submit_0").remove();
+		        $(newFields).find("#submit_"+(counter)).attr("id","submit_0");
+
+
+		        $(newFields).find("#panel_"+(counter-1)).attr("id","panel_"+counter);
+		        $(newFields).find("#ld_panel_"+(counter-1)).attr("id","ld_panel_"+counter);
+		        $(newFields).find("#hd_panel_"+(counter-1)).attr("id","hd_panel_"+counter);
+		        $(newFields).find("#audio_panel_"+(counter-1)).attr("id","audio_panel_"+counter);
+		        $(newFields).find("#zoom_button_panel_"+(counter-1)).attr("id","zoom_button_panel_"+counter);
+		        $(newFields).find("#audio_drag_head_"+(counter-1)).attr("id","audio_drag_head_"+counter);
+		        $(newFields).find("#audio_play_type_div_"+(counter-1)).attr("id","audio_play_type_div_"+counter);
+		      
+		        $(newFields).find("#video_panel_"+(counter-1)).attr("id","video_panel_"+counter);
+            $(newFields).find("#or_label_video_"+(counter-1)).attr("id","or_label_video_"+counter);
+            $(newFields).find("#video_heading_"+(counter-1)).attr("id","video_heading_"+counter);
+            $(newFields).find("#embed_label_video_"+(counter-1)).attr("id","embed_label_video_"+counter);
+            $(newFields).find("#play_type_label_"+(counter-1)).attr("id","play_type_label_"+counter);
+
+		        $(newFields).find("#audio_"+(counter)).attr("onchange","playFile(this,"+counter+")");
+
+		        $(newFields).find("#img_sound_play_"+(counter)).attr("onClick","audio_play("+counter+")");
+		        $(newFields).find("#img_sound_pause_"+(counter)).attr("onClick","audio_pause("+counter+")");
+
+		        $(newFields).find("#videofile_"+(counter)).attr("onchange","videoplayFile(this,"+counter+")");
+		        $(newFields).find("#video_url_"+(counter)).attr("onkeyup","youtube_url_iframe("+counter+")");
+		        $(newFields).find("#video_url_"+(counter)).attr("onchange","youtube_url_iframe("+counter+")");
+		        $(newFields).find("#remove_video_"+(counter)).attr("onClick","delete_video("+counter+")");
+		        $(newFields).find("#remove_audio_"+(counter)).attr("onClick","delete_audio("+counter+")");
+		        document.getElementById('audio_drag_head_'+counter).style.display = "block";
+		        document.getElementById('audio_'+counter).style.display = "inline";
+		        document.getElementById('remove_audio_'+counter).style.display = "none";
+		        document.getElementById('audio_play_type_div_'+counter).style.display = "none";  
+
+            $("#or_label_video_"+counter).removeClass("video_no_upload_"+(counter-1));
+            $("#video_heading_"+counter).removeClass("video_no_upload_"+(counter-1));
+            $("#embed_label_video_"+counter).removeClass("video_no_upload_"+(counter-1));
+            $("#videofile_"+counter).removeClass("video_no_upload_"+(counter-1));
+            $("#video_url_"+counter).removeClass("video_no_upload_"+(counter-1));
+
+            $("#or_label_video_"+counter).addClass("video_no_upload_"+counter);
+            $("#video_heading_"+counter).addClass("video_no_upload_"+counter);
+            $("#embed_label_video_"+counter).addClass("video_no_upload_"+counter);
+            $("#videofile_"+counter).addClass("video_no_upload_"+counter);
+            $("#video_url_"+counter).addClass("video_no_upload_"+counter);
+
+            $(".video_no_upload_"+counter).show();
+            $("#remove_video_"+counter).hide();
+            $("#video_play_type_"+counter).hide();
+            $("#play_type_label_"+counter).hide();
+		        // Accordian Selection
+		        accordion_toggle();
+
+		        //Function for sortable property of images LD and HD
+		        $( function() {
+		          $( ".sortable" ).sortable({ tolerance: 'pointer' });
+		          // $( "#sortable" ).disableSelection();
+		        } );
+
+		        // If Image Button Checked
+		        if(flag==1)
+		        {
+		          $('#interactivity_images_'+(counter-1)).prop("checked", true);
+		          $('#interactivity_images_'+(counter)).prop("checked", false);
+		          $("#select_video_"+counter).css("display","none");
+		          $("#select_images_"+counter).css("display","none");
+		        }
+		        // If Video Button Checked
+		        if(flag==0)
+		        {
+		          $('#interactivity_video_'+(counter-1)).prop("checked", true);
+		          $('#interactivity_video_'+(counter)).prop("checked", false);
+		          $("#select_video_"+counter).css("display","none");
+		          $("#select_images_"+counter).css("display","none");
+		        }
+
+		        // Video Play/Pause 
+		        $('.video').parent().click(function () 
+		        {
+		          if($(this).children(".video").get(0).paused)
+		          {
+		            $(this).children(".video").get(0).play();
+		            $(this).children(".playpause").fadeOut();
+		          }
+		          else
+		          {
+		            $(this).children(".video").get(0).pause();
+		            $(this).children(".playpause").fadeIn();
+		          }
+		        });
+		    }
+
+	      	var deleted_interactivity = [];
+	      	// Delete Interactivity  
+	      	function deleteFields(url_counter) 
+	      	{
+		        $("#interactivity_"+url_counter).remove();
+		        $("#delete_button_"+(url_counter+1)).css("display","none");
+		        $("#delete_button_"+(url_counter+1)).removeClass("delete_button");
+		        deleted_interactivity.push(url_counter);
+		        document.getElementById("deleted_interactivity").value = deleted_interactivity;
+		    }
+
+	      	// On click of choose file LD Images  
+	      	var readURL_ld = function(input,url_counter) 
+	      	{ 
+	          	$.each(input.files, function(value) 
+	          	{
+		          	var reader = new FileReader();
+		          	reader.onload = function (e) 
+		          	{
+			            var id = (new Date).getTime();
+			            number_ld[url_counter]++;
+			            // Appending LD Images
+			            $('#up_ld_images_'+url_counter).append('<li id='+number_ld[url_counter]+' class="ui-state-default ui-sortable-handle image_ld_'+number_ld[url_counter]+'_'+url_counter+'"><div class="image-container" style="display: inline;"><img class="img_'+number_ld[url_counter]+'" id='+id+' src='+e.target.result+' width="100px" height="100px" style="position: relative; left: 0px; top: 0px; vertical-align: middle; cursor: pointer; padding-right: 0.5%; padding-left: 0.5%;" data-index='+number_ld[url_counter]+' /><div class="after"><div id="overlay_ld_'+number_ld[url_counter]+'_'+url_counter+'" style="float: left; padding-left: 30px;">'+number_ld[url_counter]+'</div><div style="float: right; padding-right: 30px; width: 17px; height: 17px;" onclick="delete_image_ld('+number_ld[url_counter]+','+url_counter+')"><img src="<?php echo $this->getSkinUrl('images/add/delt.png'); ?>" style="width: 17px; height: 17px;"/></div></div></div></li>')
+			        };
+		          	reader.readAsDataURL(input.files[value]);
+	        	});
+		        // Inserting Choose Image Input Button 
+		        $('#uploadedImages_ld_'+url_counter+'_'+ld_click[url_counter]).after('<input multiple="true" onchange="readURL_ld(this,'+url_counter+');" id="uploadedImages_ld_'+url_counter+'_'+(ld_click[url_counter]+1)+'" name="pictures_ld_'+url_counter+'_'+(ld_click[url_counter]+1)+'[]" type="file" style="width:100%; height:60px;opacity: 0; display:none;">');
+		        $("#uploadedImages_ld_"+url_counter+"_"+ld_click[url_counter]).css("display", "none");
+		          ld_click[url_counter]++;
+		        $("#uploadedImages_ld_"+url_counter+"_"+ld_click[url_counter]).css("display", "block");
+		        document.getElementById("no_of_ld_click_"+url_counter).value = ld_click[url_counter];
+	      	}
+
+	      	// Fetching LD Images Sort Order 
+		    function arrange_order_ld(url_counter) 
+		    {
+		        var idsInOrder = $("#up_ld_images_"+url_counter).sortable("toArray");
+		        document.getElementById("sort_order_ld_"+url_counter).value = idsInOrder;
+		        for (var i = 0; i < idsInOrder.length; i++) 
+		        {  
+		          document.getElementById("overlay_ld_"+idsInOrder[i]+"_"+url_counter).innerHTML=i+1;
+		        }
+		    }
+
+		    // Delete LD Images
+		    function delete_image_ld(img_id,url_counter)
+		    {
+		        $(".image_ld_"+img_id+"_"+url_counter).closest("li").remove();
+		    }
+
+		    // On click of choose file HD Images  
+		    var readURL_hd = function(input,url_counter) 
+		    {
+		        $.each(input.files, function(value) 
+		        {
+		          var reader = new FileReader();
+		          reader.onload = function (e) 
+		          {
+		            var id = (new Date).getTime();
+		            number_hd[url_counter]++;
+		            // Appending HD Images
+		            $('#up_hd_images_'+url_counter).append('<li id='+number_hd[url_counter]+' class="ui-sortable-handle image_hd_'+number_hd[url_counter]+'_'+url_counter+'"><div class="image-container" style="display: inline;"><img class="img_'+number_hd[url_counter]+'" id='+id+' src='+e.target.result+' width="100px" height="100px" style="position: relative; left: 0px; top: 0px; vertical-align: middle; cursor: pointer; padding-right: 0.5%; padding-left: 0.5%;" data-index='+number_hd[url_counter]+' /><div class="after"><div id="overlay_hd_'+number_hd[url_counter]+'_'+url_counter+'" style="float: left; padding-left: 30px;">'+number_hd[url_counter]+'</div><div style="float: right; padding-right: 30px; width: 17px; height: 17px;" onclick="delete_image_hd('+number_hd[url_counter]+','+url_counter+')"><img src="<?php echo $this->getSkinUrl('images/add/delt.png'); ?>" style="width: 17px; height: 17px;"/></div></div></div></li>')
+		          };
+		          reader.readAsDataURL(input.files[value]);
+		        }); 
+		        // Inserting Choose Image Input Button 
+		        $('#uploadedImages_hd_'+url_counter+'_'+hd_click[url_counter]).after('<input multiple="true" onchange="readURL_hd(this,'+url_counter+');" id="uploadedImages_hd_'+url_counter+'_'+(hd_click[url_counter]+1)+'" name="pictures_hd_'+url_counter+'_'+(hd_click[url_counter]+1)+'[]" type="file" style="width:100%; height:60px; display:none;opacity: 0">');
+		        $("#uploadedImages_hd_"+url_counter+"_"+hd_click[url_counter]).css("display", "none");
+		          hd_click[url_counter]++;
+		        $("#uploadedImages_hd_"+url_counter+"_"+hd_click[url_counter]).css("display", "block");
+		        document.getElementById("no_of_hd_click_"+url_counter).value = hd_click[url_counter];
+		    }
+
+		    // Fetching HD Images Sort Order 
+		    function arrange_order_hd(url_counter) 
+		    {
+		        var idsInOrder = $("#up_hd_images_"+url_counter).sortable("toArray");
+		        document.getElementById("sort_order_hd_"+url_counter).value = idsInOrder;
+		        for (var i = 0; i < idsInOrder.length; i++) {  
+		          document.getElementById("overlay_hd_"+idsInOrder[i]+"_"+url_counter).innerHTML = i+1;
+		        }
+		    }
+
+		    // Delete HD Images
+		    function delete_image_hd(img_id,url_counter)
+		    {
+		        $(".image_hd_"+img_id+"_"+url_counter).closest("li").remove();
+		    }
+	      
+		    //Audio Upload
+		    function playFile(obj,url_counter) 
+		    {
+		        var sound = document.getElementById('sound_'+url_counter);
+		        var reader = new FileReader();
+		        var audio_parameter = "audio_"+url_counter;
+		        reader.onload = (function(audio_parameter) {return function(e) {audio_parameter.src = e.target.result;};})(sound);
+		        reader.addEventListener('load', function() 
+		        {
+		        	document.getElementById("audio_img_"+url_counter).style.display = "block";
+		        });
+		        reader.readAsDataURL(obj.files[0]);	
+		        document.getElementById('audio_drag_head_'+url_counter).style.display = "none";
+		        document.getElementById('audio_'+url_counter).style.display = "none";
+		        document.getElementById('remove_audio_'+url_counter).style.display = "inline";
+		        document.getElementById('audio_play_type_div_'+url_counter).style.display = "inline";   
+		    }
+
+		    // Audio Preview Play
+		    function audio_play(url_counter)
+		    {
+		        document.getElementById("sound_"+url_counter).play();
+		        document.getElementById("img_sound_pause_"+url_counter).style.display = "inline-block";
+		        document.getElementById("img_sound_play_"+url_counter).style.display = "none";
+		    }
+
+		    // Audio Preview Pause
+	 	    function audio_pause(url_counter)
+		    {
+		        document.getElementById("sound_"+url_counter).pause();
+		        document.getElementById("img_sound_pause_"+url_counter).style.display = "none";
+		        document.getElementById("img_sound_play_"+url_counter).style.display = "inline-block";
+		    }
+
+		    // When audio is loaded
+		    function audio_time(url_counter)
+		    {
+		    	var vid = document.getElementById("sound_"+url_counter);
+				document.getElementById('audio_duration_'+url_counter).value = vid.duration;
+		    }
+
+		    //When audio finishes play
+		    function audio_finish(url_counter)
+		    {
+		    	document.getElementById("img_sound_pause_"+url_counter).style.display = "none";
+		        document.getElementById("img_sound_play_"+url_counter).style.display = "inline-block";
+		    }
+
+		    //Video Upload
+		    function videoplayFile(obj,url_counter) 
+		    {
+		        var video_preview = document.getElementById('video_preview_'+url_counter);
+		        var reader = new FileReader();
+		        var video_parameter = "videofile_"+url_counter;
+		        reader.onload = (function(video_parameter) {return function(e) {video_parameter.src = e.target.result;};})(video_preview);
+		        document.getElementById('video_preview_'+url_counter).style.display = "inline";
+		        document.getElementById('video_iframe_'+url_counter).style.display = "none";
+		        document.getElementById('video_url_'+url_counter).value = "";		       
+		        reader.readAsDataURL(obj.files[0]);
+            $("#remove_video_"+url_counter).show();
+            $("#video_play_type_"+url_counter).show();
+            $("#play_type_label_"+url_counter).show();
+            $(".video_no_upload_"+url_counter).hide();
+            
+		    }
+		    	// Video Play/Pause 
+		        $('.video').parent().click(function () 
+		        {
+		          if($(this).children(".video").get(0).paused)
+		          {
+		            $(this).children(".video").get(0).play();
+		            $(this).children(".playpause").fadeOut();
+		          }
+		          else
+		          {
+		            $(this).children(".video").get(0).pause();
+		            $(this).children(".playpause").fadeIn();
+		          }
+		        });
+		       
+		     // When video ends
+		     function video_Ended(url_counter)
+		     {
+		     	document.getElementById('playpause_'+url_counter).style.display = "inline";
+		     }
+
+		    // Youtube Video Preview 
+		    function youtube_url_iframe(url_counter)
+		    {
+		        document.getElementById('videofile_'+url_counter).value = "";
+		        document.getElementById('video_preview_'+url_counter).style.display = "none";
+		        var video_url= document.getElementById('video_url_'+url_counter).value;
+		        document.getElementById('url_youtube_'+url_counter).value = video_url;
+		        document.getElementById('video_iframe_'+url_counter).innerHTML= video_url;
+		        document.getElementById('video_iframe_'+url_counter).style.display = "inline";
+            $("#remove_video_"+url_counter).show();
+            $("#video_play_type_"+url_counter).show();
+            $("#play_type_label_"+url_counter).show();
+            $(".video_no_upload_"+url_counter).hide();
+            
+		    }
+
+		    // Delete Video
+		    function delete_video(url_counter)
+			{
+			  	document.getElementById('videofile_'+url_counter).value = "";
+		        document.getElementById('video_preview_'+url_counter).style.display = "none";
+		        document.getElementById('video_iframe_'+url_counter).style.display = "none";
+		        document.getElementById('video_url_'+url_counter).value = "";
+		        $("#video_play_type_"+url_counter).val("");
+            $(".video_no_upload_"+url_counter).show();
+            $("#remove_video_"+url_counter).hide();
+            $("#video_play_type_"+url_counter).hide();
+            $("#play_type_label_"+url_counter).hide();
+			}
+
+			// Delete Audio
+			function delete_audio(url_counter)
+			{
+			  	document.getElementById("audio_img_"+url_counter).style.display = "none";
+			  	document.getElementById('audio_'+url_counter).value = "";
+			  	$("#audio_play_type_"+url_counter).val("");
+			  	document.getElementById('audio_drag_head_'+url_counter).style.display = "block";
+		      document.getElementById('audio_'+url_counter).style.display = "inline";
+		      document.getElementById('remove_audio_'+url_counter).style.display = "none";
+		      document.getElementById('audio_play_type_div_'+url_counter).style.display = "none";  
+		      document.getElementById('audio_duration_'+url_counter).value = "";
+			}
+	    </script>
+  <!-- Button Bar Script End - Chelsea -->
+
+  <!-- Hotspot Interactivity Script start - Reethu -->
+	    <script type="text/javascript">
+
+	        var hotspot_counter = 0;
+	        sessionStorage.setItem("counter_hotspot", hotspot_counter);
+	        // Array of deleted hotspot
+	        var deleted_hotspot = new Array();
+	        // Number of LD Images
+	        var number_ld_hotspot = new Array();
+	        number_ld_hotspot[0] = 0;
+	        // Number of LD Images choose file is clicked
+	        var hotspot_ld_click = new Array();
+	        hotspot_ld_click[0] = 0;
+	        // Number of HD Images
+	        var number_hd_hotspot = new Array();
+	        number_hd_hotspot[0] = 0;
+	        // Number of HD Images choose file is clicked
+	        var hotspot_hd_click = new Array();
+	        hotspot_hd_click[0] = 0;
+	        // Array in Order of Hotspot div id
+	        var array_of_hotspot = new Array();
+	        array_of_hotspot[0] = 0;
+	      	document.getElementById('array_of_hotspot').value = array_of_hotspot;
+
+	      	//counter of hotspot rectangle
+		    var i=1;
+
+		    //counter for hotspot
+		    var count=1;
+
+	      	var delete_counter = 0;
+		    var BASE_URL =  '<?php echo Mage::getUrl('work/admin/page');?>';
+
+		    //For storing map code for hotspot
+		    var anchor_tag = "";
+		    var map_code = "";
+		    sessionStorage.setItem("Anchor_tag", anchor_tag);
+		    var left_tag = "";
+		    var top_tag = "";
+		    var width_tag = "";
+		    var height_tag = "";
+		    var title_tag = "";
+		    // product id
+		    var product_id= <?php echo $product ?>;
+		    sessionStorage.setItem("Product_Id", product_id);
+
+	        // Input Fields Validation
+	      	function vaildation_hotspot()
+	      	{
+	      		// Customization Fields Validation
+		        if( !$('#text_color').val() ) 
+		        {
+		          alert("Please fill text color");
+		        }
+		        else if( !$('#button_color').val() ) 
+		        {
+		          alert("Please fill button color");
+		        }
+		        else if( !$('#band_color').val()  ) 
+		        {
+		          alert("Please fill band color");
+		        }
+
+
+            var total_interactivity = document.getElementById('hotspot_interactivity_counter').value;
+            var deleted_items_hotspot = document.getElementById('deleted_hotspot').value;
+            var deleted_items = 0;
+            // Checking if Deleted hotspots are Present
+            if(deleted_items_hotspot != "")
+            {
+              var deleted_items_array = deleted_items_hotspot.split(",");
+              deleted_items = deleted_items_array.length;
+            
+              for (var i = 0; i < total_interactivity; i++) 
+              {
+                if(deleted_items_array.indexOf(''+i) == -1)
+                {  
+                    arrange_order_hotspot_ld(i);
+                    arrange_order_hotspot_hd(i);            
+                }
+              }
+            }
+            else
+            { 
+              for (var i = 0; i < total_interactivity; i++) 
+              {
+                  arrange_order_hotspot_ld(i);
+                  arrange_order_hotspot_hd(i); 
+              }
+            }
+
+
+		        if ($('#band_color').val() && $('#text_color').val() && $('#button_color').val()) 
+		        {
+		          $( "#add_hotspot_form" ).submit();
+              $("#loading_page").show();
+              document.getElementById('loading_page_heading').innerHTML = "Saving Hotspot";            
+              window.scrollTo(0,0);
+              $(".squarebox").hide();
+              $("#submit_0").hide();
+              $("#insert_interactivity_button").hide();
+              $(".hide_load").hide();
+              $("#insert_hotspot_button").hide();
+              $(".cssload-thecube").fadeIn('slow');
+              $(".cssload-loader").fadeIn('slow');
+		        }
+	      	}
+
+	        // Accordian Toggle
+	        function accordion_toggle_hotspot() 
+	        {
+	          var acc = document.getElementsByClassName("accordion");
+	          var i;
+
+	          for (i = 0; i < acc.length; i++) 
+	          {
+	              acc[i].onclick = function()
+	              {
+	                  this.classList.toggle("active");
+	                  this.nextElementSibling.classList.toggle("show");
+	              }
+	          }
+	        }
+
+	        // Select Images Interactivity
+	        function image_click_hotspot(i)
+	        {
+	          $("#hotspot_select_video_"+i).css("display","none");
+	          $("#hotspot_select_images_"+i).css("display","block");
+	        }
+	        // Select Video Interactivity
+	        function video_click_hotspot(i)
+	        {
+	          $("#hotspot_select_images_"+i).css("display","none");
+	          $("#hotspot_select_video_"+i).css("display","block");
+	        }
+
+	        // Create a new row for new interactivity in the UI 
+	        // Function is called when stop button is clicked
+	        function hotspot_moreFields() 
+	        {
+	          // Increment Counter when Add New Interactivity Button Clicked
+	          hotspot_counter++;
+	          sessionStorage.setItem("counter_hotspot", hotspot_counter);
+	          number_ld_hotspot[hotspot_counter] = 0;
+	          hotspot_ld_click[hotspot_counter] = 0;
+	          number_hd_hotspot[hotspot_counter] = 0;
+	          hotspot_hd_click[hotspot_counter] = 0;
+	          
+		      array_of_hotspot[hotspot_counter] = hotspot_counter;
+		      document.getElementById('array_of_hotspot').value = array_of_hotspot; 
+	          document.getElementById('hotspot_interactivity_counter').value = hotspot_counter+1;
+	          // Cloning Hotspot Interactivity Div 
+	          var newFields = document.getElementById('hotspot_interactivity_'+(hotspot_counter-1)).cloneNode(true);
+
+	          newFields.id = 'hotspot_interactivity_'+hotspot_counter;
+	          newFields.style.display = 'block';
+	          // Naming Child Nodes
+	          var newField = newFields.childNodes;
+	          for (var i=0;i<newField.length;i++) 
+	          {
+	            var theName = newField[i].name
+	            if (theName)
+	              newField[i].name = theName + hotspot_counter;
+	          }
+
+	          // Reinserting Add Button
+	          var insertHere = document.getElementById('add_hotspot');
+	          insertHere.parentNode.insertBefore(newFields,insertHere);
+
+	          $("#delete_button_hotspot_"+(hotspot_counter-1)).css("display","inline");
+
+	          // Changing Attributes(id,class,name) of Child Nodes
+	          $(newFields).find("#hotspot_accordian_"+(hotspot_counter-1)).attr("id","hotspot_accordian_"+hotspot_counter);
+
+	          $(newFields).find("#hotspot_select_images_"+(hotspot_counter-1)).attr("id","hotspot_select_images_"+hotspot_counter);
+	          $(newFields).find("#hotspot_select_video_"+(hotspot_counter-1)).attr("id","hotspot_select_video_"+hotspot_counter);
+	          $(newFields).find("#hotspot_images_"+(hotspot_counter-1)).attr("id","hotspot_images_"+hotspot_counter);
+	          $(newFields).find("#hotspot_video_"+(hotspot_counter-1)).attr("id","hotspot_video_"+hotspot_counter);
+
+	          var deleted_items = deleted_hotspot.length;
+	          $(newFields).find("input[name~='hotspot_name_"+(hotspot_counter-1)+"']").attr("name","hotspot_name_"+hotspot_counter).val("Feature "+((hotspot_counter+1) - deleted_items));
+
+	          $(newFields).find("input[name~='hotspot_title_"+(hotspot_counter-1)+"']").attr({id: "hotspot_title_"+hotspot_counter , name: "hotspot_title_"+hotspot_counter}).val("Feature "+((hotspot_counter+1) - deleted_items));
+
+	          // .attr("name","hotspot_title_"+hotspot_counter).val("Feature "+((hotspot_counter+1) - deleted_items));
+	          $(newFields).find("input[name~='hotspot_title_"+(hotspot_counter)+"']").attr("onchange","Set_Title("+hotspot_counter+")");
+	          $(newFields).find("input[name~='hotspot_title_"+(hotspot_counter)+"']").attr("onkeyup","Set_Title("+hotspot_counter+")");
+	          $("#rectangle_"+(hotspot_counter+1)).attr('title', 'Feature '+((hotspot_counter+1) - deleted_items));
+	          $(newFields).find("input[name~='hotspot_ld_image_speed_"+(hotspot_counter-1)+"']").attr("name","hotspot_ld_image_speed_"+hotspot_counter).val("");
+	          $(newFields).find("#hotspot_audio_play_type_"+(hotspot_counter-1)).attr({id: "hotspot_audio_play_type_"+hotspot_counter , name: "hotspot_audio_play_type_"+hotspot_counter});
+
+	          $(newFields).find("#hotspot_video_play_type_"+(hotspot_counter-1)).attr({id: "hotspot_video_play_type_"+hotspot_counter , name: "hotspot_video_play_type_"+hotspot_counter}).val("");
+	          $(newFields).find("input[name~='hotspot_video_url_"+(hotspot_counter-1)+"']").attr("name","hotspot_video_url_"+hotspot_counter).val("");
+
+	          $(newFields).find("#up_hotspot_ld_images_"+(hotspot_counter-1)).attr("id","up_hotspot_ld_images_"+hotspot_counter).empty();
+	          $(newFields).find("#up_hotspot_hd_images_"+(hotspot_counter-1)).attr("id","up_hotspot_hd_images_"+hotspot_counter).empty();
+	          $(newFields).find("input[name~='hotspot_audio"+(hotspot_counter-1)+"']").attr("name","audio_"+hotspot_counter);
+	          $(newFields).find("input[name~='hotspot_videofile_"+(hotspot_counter-1)+"']").attr("name","hotspot_videofile_"+hotspot_counter);
+
+	          $(newFields).find("input[name~='hotspot_audio_img_"+(hotspot_counter-1)+"']").attr("name","hotspot_audio_img_"+hotspot_counter);
+
+	          $(newFields).find("#hotspot_sort_order_ld_"+(hotspot_counter-1)).attr({id: "hotspot_sort_order_ld_"+hotspot_counter , name: "hotspot_sort_order_ld_"+hotspot_counter}).val("");
+	          $(newFields).find("#hotspot_no_of_ld_click_"+(hotspot_counter-1)).attr({id: "hotspot_no_of_ld_click_"+hotspot_counter , name: "hotspot_no_of_ld_click_"+hotspot_counter}).val("");
+	          $(newFields).find("#hotspot_sort_order_hd_"+(hotspot_counter-1)).attr({id: "hotspot_sort_order_hd_"+hotspot_counter , name: "hotspot_sort_order_hd_"+hotspot_counter}).val("");
+	          $(newFields).find("#hotspot_no_of_hd_click_"+(hotspot_counter-1)).attr({id: "hotspot_no_of_hd_click_"+hotspot_counter , name: "hotspot_no_of_hd_click_"+hotspot_counter}).val("");
+	          $(newFields).find("#hotspot_url_youtube_"+(hotspot_counter-1)).attr({id: "hotspot_url_youtube_"+hotspot_counter , name: "hotspot_url_youtube_"+hotspot_counter}).val("");
+	          $(newFields).find("#hotspot_audio_duration_"+(hotspot_counter-1)).attr({id: "hotspot_audio_duration_"+hotspot_counter , name: "hotspot_audio_duration_"+hotspot_counter}).val("");
+	          
+	          $(newFields).find("#hotspot_video_url_"+(hotspot_counter-1)).attr("id","hotspot_video_url_"+hotspot_counter);
+            $(newFields).find("#hotspot_wapper_video_"+(hotspot_counter-1)).attr("id","hotspot_wapper_video_"+hotspot_counter);
+            
+	          $(newFields).find("#hotspot_videofile_"+(hotspot_counter-1)).attr("id","hotspot_videofile_"+hotspot_counter);
+	          $(newFields).find("#hotspot_audio_"+(hotspot_counter-1)).attr({id: "hotspot_audio_"+hotspot_counter , name: "hotspot_audio_"+hotspot_counter}).val("");
+	          $(newFields).find("#hotspot_video_preview_"+(hotspot_counter-1)).attr({id: "hotspot_video_preview_"+hotspot_counter , src: ""}).css("display","none");
+	          $(newFields).find("#hotspot_video_preview_"+(hotspot_counter)).attr("onended","hotspot_video_Ended("+hotspot_counter+")");
+		      $(newFields).find("#hotspot_playpause_"+(hotspot_counter-1)).attr("id","hotspot_playpause_"+hotspot_counter);
+
+	          $(newFields).find("#video_hotspot_iframe_"+(hotspot_counter-1)).attr({id: "video_hotspot_iframe_"+hotspot_counter , src: ""}).css("display","none");
+	          $(newFields).find("#hotspot_audio_img_"+(hotspot_counter-1)).attr("id","hotspot_audio_img_"+hotspot_counter).css("display","none");
+	          $(newFields).find("#hotspot_sound_"+(hotspot_counter-1)).attr({id: "hotspot_sound_"+hotspot_counter , src: ""});
+	          $(newFields).find("#hotspot_sound_"+(hotspot_counter)).attr("onloadeddata","hotspot_audio_time("+hotspot_counter+")");
+	          $(newFields).find("#hotspot_sound_"+(counter)).attr("onended","hotspot_audio_finish("+hotspot_counter+")");
+	          $(newFields).find("#hotspot_img_sound_pause_"+(hotspot_counter-1)).attr("id","hotspot_img_sound_pause_"+hotspot_counter);
+	          $(newFields).find("#hotspot_img_sound_play_"+(hotspot_counter-1)).attr("id","hotspot_img_sound_play_"+hotspot_counter);
+
+	          $(newFields).find("#input_hotspot_ld_"+(hotspot_counter-1)).attr("id","input_hotspot_ld_"+hotspot_counter);
+	          $(newFields).find("#input_hotspot_ld_"+(hotspot_counter)).empty();
+	          $(newFields).find("#input_hotspot_ld_"+(hotspot_counter)).append('<input multiple="true" onchange="readURL_hotspot_ld(this,'+(hotspot_counter-1)+');" id="uploadedImages_hotspot_ld_'+(hotspot_counter-1)+'_0" name="pictures_hotspot_ld_'+(hotspot_counter-1)+'_0[]" type="file" style="width:100%; height:50px; display:block;">');
+
+	          $(newFields).find("#input_hotspot_hd_"+(hotspot_counter-1)).attr("id","input_hotspot_hd_"+hotspot_counter);
+	          $(newFields).find("#input_hotspot_hd_"+(hotspot_counter)).empty();
+	          $(newFields).find("#input_hotspot_hd_"+(hotspot_counter)).append('<input multiple="true" onchange="readURL_hotspot_hd(this,'+(hotspot_counter-1)+');" id="uploadedImages_hotspot_hd_'+(hotspot_counter-1)+'_0" name="pictures_hotspot_hd_'+(hotspot_counter-1)+'_0[]" type="file" style="width:100%; height:50px; display:block;">');
+
+
+	          $(newFields).find("#uploadedImages_hotspot_ld_"+(hotspot_counter-1)+"_0").attr("id","uploadedImages_hotspot_ld_"+hotspot_counter+"_0");  
+	          $(newFields).find("input[name~='pictures_hotspot_ld_"+(hotspot_counter-1)+"_0[]']").attr("name","pictures_hotspot_ld_"+hotspot_counter+"_0[]");
+	          $(newFields).find("#uploadedImages_hotspot_hd_"+(hotspot_counter-1)+"_0").attr("id","uploadedImages_hotspot_hd_"+hotspot_counter+"_0");
+	          $(newFields).find("input[name~='pictures_hotspot_hd_"+(hotspot_counter-1)+"_0[]']").attr("name","pictures_hotspot_hd_"+hotspot_counter+"_0[]");
+
+	          $(newFields).find("#hotspot_video_"+(hotspot_counter)).attr("onclick","video_click_hotspot("+hotspot_counter+")");
+	          $(newFields).find("#hotspot_images_"+(hotspot_counter)).attr("onclick","image_click_hotspot("+hotspot_counter+")");
+
+
+	          $(newFields).find("#uploadedImages_hotspot_ld_"+(hotspot_counter)+"_0").attr("onchange","readURL_hotspot_ld(this,"+hotspot_counter+")");
+	          $(newFields).find("#up_hotspot_ld_images_"+(hotspot_counter)).attr("onmouseout","arrange_order_hotspot_ld("+hotspot_counter+")");
+
+	          $(newFields).find("#uploadedImages_hotspot_hd_"+(hotspot_counter)+"_0").attr("onchange","readURL_hotspot_hd(this,"+hotspot_counter+")");
+	          $(newFields).find("#up_hotspot_hd_images_"+(hotspot_counter)).attr("onmouseout","arrange_order_hotspot_hd("+hotspot_counter+")");
+	          
+	          $(newFields).find("#audio_done_button_"+(hotspot_counter-1)).attr("id","audio_done_button_"+(hotspot_counter));
+	          $(newFields).find("#video_done_button_"+(hotspot_counter-1)).attr("id","video_done_button_"+(hotspot_counter));
+
+	          $(newFields).find("#audio_done_button_"+(hotspot_counter)).attr("onclick","done_drawing("+hotspot_counter+")");
+	          $(newFields).find("#video_done_button_"+(hotspot_counter)).attr("onclick","done_drawing("+hotspot_counter+")");
+
+	          $(newFields).find("input[name~='hotspot_select_"+(hotspot_counter-1)+"']").attr("name","hotspot_select_"+hotspot_counter);
+
+	          $(newFields).find("#hotspot_panel_"+(hotspot_counter-1)).attr("id","hotspot_panel_"+hotspot_counter);
+	          $(newFields).find("#hotspot_ld_panel_"+(hotspot_counter-1)).attr("id","hotspot_ld_panel_"+hotspot_counter);
+	          $(newFields).find("#hotspot_hd_panel_"+(hotspot_counter-1)).attr("id","hotspot_hd_panel_"+hotspot_counter);
+	          $(newFields).find("#hotspot_audio_panel_"+(hotspot_counter-1)).attr("id","hotspot_audio_panel_"+hotspot_counter);
+	          $(newFields).find("#hotspot_video_panel_"+(hotspot_counter-1)).attr("id","hotspot_video_panel_"+hotspot_counter);
+
+	          $(newFields).find("#hotspot_audio_"+(hotspot_counter)).attr("onchange","hotspotplayFile(this,"+hotspot_counter+")");
+	          $(newFields).find("#hotspot_img_sound_play_"+(hotspot_counter)).attr("onClick","hotspot_audio_play("+hotspot_counter+")");
+	          $(newFields).find("#hotspot_img_sound_pause_"+(hotspot_counter)).attr("onClick","hotspot_audio_pause("+hotspot_counter+")");
+
+	          $(newFields).find("#hotspot_videofile_"+(hotspot_counter)).attr("onchange","hotspot_videoplayFile(this,"+hotspot_counter+")");
+	          $(newFields).find("#hotspot_video_url_"+(hotspot_counter)).attr("onkeyup","youtube_url_hotspot_iframe("+hotspot_counter+")");
+	          $(newFields).find("#hotspot_video_url_"+(hotspot_counter)).attr("onchange","youtube_url_hotspot_iframe("+hotspot_counter+")");
+
+            $(newFields).find("#hotspot_or_label_video_"+(hotspot_counter-1)).attr("id","hotspot_or_label_video_"+hotspot_counter);
+            $(newFields).find("#hotspot_video_heading_"+(hotspot_counter-1)).attr("id","hotspot_video_heading_"+hotspot_counter);
+            $(newFields).find("#hotspot_embed_label_video_"+(hotspot_counter-1)).attr("id","hotspot_embed_label_video_"+hotspot_counter);
+            $(newFields).find("#hotspot_play_type_label_"+(hotspot_counter-1)).attr("id","hotspot_play_type_label_"+hotspot_counter);
+
+	          $(newFields).find("#delete_button_hotspot_"+(hotspot_counter-1)).attr("id","delete_button_hotspot_"+(hotspot_counter));
+	          $(newFields).find("#delete_hotspot_"+(hotspot_counter-1)).attr("id","delete_hotspot_"+(hotspot_counter));
+
+	          $(newFields).find("#delete_hotspot_"+(hotspot_counter)).attr("onclick","deleteFields_hotspot("+hotspot_counter+")");
+	          $(newFields).find("#remove_video_hotspot_"+(hotspot_counter-1)).attr("id","remove_video_hotspot_"+hotspot_counter);
+	          $(newFields).find("#remove_video_hotspot_"+(hotspot_counter)).attr("onClick","delete_video_hotspot("+hotspot_counter+")");
+	          $(newFields).find("#remove_audio_hotspot_"+(hotspot_counter-1)).attr("id","remove_audio_hotspot_"+hotspot_counter);
+	          $(newFields).find("#remove_audio_hotspot_"+(hotspot_counter)).attr("onClick","delete_audio_hotspot("+hotspot_counter+")");
+	          $(newFields).find("#hotspot_audio_drag_head_"+(hotspot_counter-1)).attr("id","hotspot_audio_drag_head_"+hotspot_counter);
+	          $(newFields).find("#hotspot_audio_play_type_div_"+(hotspot_counter-1)).attr("id","hotspot_audio_play_type_div_"+hotspot_counter);
+	          document.getElementById('hotspot_audio_drag_head_'+hotspot_counter).style.display = "block";
+  		      document.getElementById('hotspot_audio_'+hotspot_counter).style.display = "inline";
+  		      document.getElementById('remove_audio_hotspot_'+hotspot_counter).style.display = "none";
+  		      document.getElementById('hotspot_audio_play_type_div_'+hotspot_counter).style.display = "none";  
+
+            $("#hotspot_or_label_video_"+hotspot_counter).removeClass("hotspot_video_no_upload_"+(hotspot_counter-1));
+            $("#hotspot_video_heading_"+hotspot_counter).removeClass("hotspot_video_no_upload_"+(hotspot_counter-1));
+            $("#hotspot_embed_label_video_"+hotspot_counter).removeClass("hotspot_video_no_upload_"+(hotspot_counter-1));
+            $("#hotspot_videofile_"+hotspot_counter).removeClass("hotspot_video_no_upload_"+(hotspot_counter-1));
+            $("#hotspot_video_url_"+hotspot_counter).removeClass("hotspot_video_no_upload_"+(hotspot_counter-1));
+
+            $("#hotspot_or_label_video_"+hotspot_counter).addClass("hotspot_video_no_upload_"+hotspot_counter);
+            $("#hotspot_video_heading_"+hotspot_counter).addClass("hotspot_video_no_upload_"+hotspot_counter);
+            $("#hotspot_embed_label_video_"+hotspot_counter).addClass("hotspot_video_no_upload_"+hotspot_counter);
+            $("#hotspot_videofile_"+hotspot_counter).addClass("hotspot_video_no_upload_"+hotspot_counter);
+            $("#hotspot_video_url_"+hotspot_counter).addClass("hotspot_video_no_upload_"+hotspot_counter);
+
+            $(".hotspot_video_no_upload_"+hotspot_counter).show();
+            $("#remove_video_hotspot_"+hotspot_counter).hide();
+            $("#hotspot_video_play_type_"+hotspot_counter).hide();
+            $("#hotspot_play_type_label_"+hotspot_counter).hide();
+            $("#hotspot_wapper_video_"+hotspot_counter).css("margin-top", "0px");
+
+	          // Accordian Selection
+	          accordion_toggle_hotspot();
+
+	          $( function() {
+	            $( ".sortable" ).sortable({ tolerance: 'pointer' });
+	            // $( "#sortable" ).disableSelection();
+	          } );
+
+	          // Video Play/Pause  
+	          $('.hotspot_video').parent().click(function () 
+	          {
+	          	if($(this).children(".hotspot_video").get(0).paused)
+	            {
+	              $(this).children(".hotspot_video").get(0).play();
+	              $(this).children(".hotspot_playpause").fadeOut();
+	            }
+	            else
+	            {
+	              $(this).children(".hotspot_video").get(0).pause();
+	              $(this).children(".hotspot_playpause").fadeIn();
+	            }
+	          });
+	        }
+
+	        // Delete Hotspot Interactivity
+	        function deleteFields_hotspot(url_counter)
+	        {
+	          var hotspot_count = sessionStorage.getItem("counter_hotspot");
+	          if(!$('#audio_done_button_'+hotspot_count).is(':disabled'))
+	          {
+	            done_drawing(hotspot_count);
+	          }
+	          else if(!$('#video_done_button_'+hotspot_count).is(':disabled'))
+	          {
+	            done_drawing(hotspot_count);
+	          }
+
+	          $("#hotspot_interactivity_"+url_counter).remove();
+	          $("#rectangle_"+(url_counter+1)).remove();
+	          $("#delete_button_hotspot_"+(url_counter)).css("display","none");
+
+	          deleted_hotspot.push(url_counter);
+	          document.getElementById("deleted_hotspot").value = deleted_hotspot;
+	          document.getElementById("add_hotspot").style.display = "inline";
+	          var total_hotspot = document.getElementById('hotspot_interactivity_counter').value;
+	          var count_hotspot = 0;
+	          var anchor_tag_hotspot = "";
+	          // Setting Map Code
+	          for (var i = 0; i < total_hotspot; i++) 
+	          { 
+	            if(jQuery.inArray(i,deleted_hotspot) < 0)
+	            {
+	              count_hotspot++;
+	              var name_of_hotspot = $('input:text[name=hotspot_name_'+i+']').val();
+	              $('input:text[name=hotspot_name_'+i+']').val('Feature '+count_hotspot);
+	              var  title_of_hotspot = document.getElementById('hotspot_title_'+i).value;
+	              if(title_of_hotspot == name_of_hotspot)        //(title_of_hotspot.startsWith("Feature"))
+	              {
+	              	$("#rectangle_"+(i+1)).attr('title', 'Feature '+count_hotspot);
+	              	$('input:text[name=hotspot_title_'+i+']').val('Feature '+count_hotspot);
+	              }
+	              else
+	              {
+	              	$("#rectangle_"+(i+1)).attr('title', title_of_hotspot);
+	              }
+	              // $("#rectangle_"+(i+1)).attr('title', 'Feature '+count_hotspot);
+
+	              var left_tag = sessionStorage.getItem("Left_"+(i+1));
+	              var top_tag = sessionStorage.getItem("Top_"+(i+1));
+	              var width_tag = sessionStorage.getItem("width_"+(i+1));
+	              var height_tag = sessionStorage.getItem("height_"+(i+1));
+	              var title_tag = sessionStorage.getItem("Title_"+(i+1));
+
+	              anchor_tag_hotspot = anchor_tag_hotspot+'<a href="'+BASE_URL+'?id='+product_id+'&hotspot='+count_hotspot+'" class="image_map" title="'+title_tag+'" style="position: absolute; left:'+left_tag+'%; top:'+top_tag+'%; width:'+width_tag+'%; height:'+height_tag+'%; z-index: 2;"></a>';
+	              sessionStorage.setItem("Anchor_tag", anchor_tag_hotspot);
+	              document.getElementById("anchor_tag_input").value= anchor_tag_hotspot ;
+
+	            }
+	          }
+	        }
+
+	        // On click of choose file LD Images  
+	        var readURL_hotspot_ld = function(input,url_counter) 
+	        { 
+	          $.each(input.files, function(value) {
+	            var reader = new FileReader();
+	            reader.onload = function (e) 
+	            {
+	              var id = (new Date).getTime();
+	              number_ld_hotspot[url_counter]++;
+	              // Appending LD Images
+	              $('#up_hotspot_ld_images_'+url_counter).append('<li id='+number_ld_hotspot[url_counter]+' class="ui-sortable-handle hotspot_image_ld_'+number_ld_hotspot[url_counter]+'_'+url_counter+'"><div class="hotspot_image-container" style="display: inline;"><img class="img_'+number_ld_hotspot[url_counter]+'" id='+id+' src='+e.target.result+' width="100px" height="100px" style="position: relative; left: 0px; top: 0px; vertical-align: middle; cursor: pointer; padding-right: 0.5%; padding-left: 0.5%;" data-index='+number_ld_hotspot[url_counter]+' /><div class="after"><div id="overlay_hotspot_ld_'+number_ld_hotspot[url_counter]+'_'+url_counter+'" style="float: left; padding-left: 30px;">'+number_ld_hotspot[url_counter]+'</div><div style="float: right; padding-right: 30px; width: 17px; height: 17px;" onclick="delete_image_hotspot_ld('+number_ld_hotspot[url_counter]+','+url_counter+')"><img src="<?php echo $this->getSkinUrl('images/add/delt.png'); ?>" style="width: 17px; height: 17px;"/></div></div></div></li>')
+	            };
+	            reader.readAsDataURL(input.files[value]);
+	          });    
+	          // Inserting Choose Image Input Button   
+	          $('#uploadedImages_hotspot_ld_'+url_counter+'_'+hotspot_ld_click[url_counter]).after('<input multiple="true" onchange="readURL_hotspot_ld(this,'+url_counter+');" id="uploadedImages_hotspot_ld_'+url_counter+'_'+(hotspot_ld_click[url_counter]+1)+'" name="pictures_hotspot_ld_'+url_counter+'_'+(hotspot_ld_click[url_counter]+1)+'[]" type="file" style="width:100%; height:50px; display:none;">');
+	          $("#uploadedImages_hotspot_ld_"+url_counter+"_"+hotspot_ld_click[url_counter]).css("display", "none");
+	            hotspot_ld_click[url_counter]++;
+	            $("#uploadedImages_hotspot_ld_"+url_counter+"_"+hotspot_ld_click[url_counter]).css("display", "block");
+	          document.getElementById("hotspot_no_of_ld_click_"+url_counter).value = hotspot_ld_click[url_counter];
+	        }
+
+	        // Fetching LD Images Sort Order 
+	        function arrange_order_hotspot_ld(url_counter) 
+	        {
+	          var idsInOrder = $("#up_hotspot_ld_images_"+url_counter).sortable("toArray");
+	          document.getElementById("hotspot_sort_order_ld_"+url_counter).value = idsInOrder;
+	          // alert(idsInOrder);
+	          for (var i = 0; i < idsInOrder.length; i++) {  
+	            document.getElementById("overlay_hotspot_ld_"+idsInOrder[i]+"_"+url_counter).innerHTML = i+1;
+	          }
+	        }
+
+	        // Delete LD Images
+	        function delete_image_hotspot_ld(img_id,url_counter)
+	        {
+	          $(".hotspot_image_ld_"+img_id+"_"+url_counter).closest("li").remove();
+	        }
+
+	        // On click of choose file HD Images  
+	        var readURL_hotspot_hd = function(input,url_counter) 
+	        { 
+	          $.each(input.files, function(value) {
+	            var reader = new FileReader();
+	            reader.onload = function (e) 
+	            {
+	              var id = (new Date).getTime();
+	              number_hd_hotspot[url_counter]++;
+	              // Appending HD Images
+	              $('#up_hotspot_hd_images_'+url_counter).append('<li id='+number_hd_hotspot[url_counter]+' class="ui-sortable-handle hotspot_image_hd_'+number_hd_hotspot[url_counter]+'_'+url_counter+'"><div class="hotspot_image-container" style="display: inline;"><img class="img_'+number_hd_hotspot[url_counter]+'" id='+id+' src='+e.target.result+' width="100px" height="100px" style="position: relative; left: 0px; top: 0px; vertical-align: middle; cursor: pointer; padding-right: 0.5%; padding-left: 0.5%;" data-index='+number_hd_hotspot[url_counter]+' /><div class="after"><div id="overlay_hotspot_hd_'+number_hd_hotspot[url_counter]+'_'+url_counter+'" style="float: left; padding-left: 30px;">'+number_hd_hotspot[url_counter]+'</div><div style="float: right; padding-right: 30px; width: 17px; height: 17px;" onclick="delete_image_hotspot_hd('+number_hd_hotspot[url_counter]+','+url_counter+')"><img src="<?php echo $this->getSkinUrl('images/add/delt.png'); ?>" style="width: 17px; height: 17px;"/></div></div></div></li>')
+	            };
+	            reader.readAsDataURL(input.files[value]);
+	          }); 
+	          // Inserting Choose Image Input Button 
+	          $('#uploadedImages_hotspot_hd_'+url_counter+'_'+hotspot_hd_click[url_counter]).after('<input multiple="true" onchange="readURL_hotspot_hd(this,'+url_counter+');" id="uploadedImages_hotspot_hd_'+url_counter+'_'+(hotspot_hd_click[url_counter]+1)+'" name="pictures_hotspot_hd_'+url_counter+'_'+(hotspot_hd_click[url_counter]+1)+'[]" type="file" style="width:100%; height:50px; display:none;">');
+	          $("#uploadedImages_hotspot_hd_"+url_counter+"_"+hotspot_hd_click[url_counter]).css("display", "none");
+	            hotspot_hd_click[url_counter]++;
+	            $("#uploadedImages_hotspot_hd_"+url_counter+"_"+hotspot_hd_click[url_counter]).css("display", "block");
+	          document.getElementById("hotspot_no_of_hd_click_"+url_counter).value = hotspot_hd_click[url_counter];
+	        }
+
+			    // Fetching HD Images Sort Order 
+	        function arrange_order_hotspot_hd(url_counter) 
+	        {
+	          var idsInOrder = $("#up_hotspot_hd_images_"+url_counter).sortable("toArray");
+	          document.getElementById("hotspot_sort_order_hd_"+url_counter).value = idsInOrder;
+	          for (var i = 0; i < idsInOrder.length; i++) 
+	          {  
+	            document.getElementById("overlay_hotspot_hd_"+idsInOrder[i]+"_"+url_counter).innerHTML=i+1;
+	          }
+	        }
+
+	        // Delete HD Images
+	        function delete_image_hotspot_hd(img_id,url_counter)
+	        {
+	          $(".hotspot_image_hd_"+img_id+"_"+url_counter).closest("li").remove();
+	        }
+	        
+	        //Audio Upload
+	        function hotspotplayFile(obj,url_counter) 
+	        {
+	          var sound = document.getElementById('hotspot_sound_'+url_counter);
+	          var reader = new FileReader();
+	          var audio_parameter = "hotspot_audio_"+url_counter;
+	          reader.onload = (function(audio_parameter) {return function(e) {audio_parameter.src = e.target.result;};})(sound);
+	          reader.addEventListener('load', function() 
+	          {
+	          	document.getElementById("hotspot_audio_img_"+url_counter).style.display = "block";
+	          });
+	          reader.readAsDataURL(obj.files[0]);
+	          document.getElementById('hotspot_audio_drag_head_'+url_counter).style.display = "none";
+		      document.getElementById('hotspot_audio_'+url_counter).style.display = "none";
+		      document.getElementById('remove_audio_hotspot_'+url_counter).style.display = "inline";
+		      document.getElementById('hotspot_audio_play_type_div_'+url_counter).style.display = "inline";  
+	        }
+
+	        // Audio Play
+	        function hotspot_audio_play(url_counter)
+	        {
+	          document.getElementById("hotspot_sound_"+url_counter).play();
+	          document.getElementById("hotspot_img_sound_pause_"+url_counter).style.display = "inline-block";
+	          document.getElementById("hotspot_img_sound_play_"+hotspot_counter).style.display = "none";
+	        }
+
+	        // Audio Pause
+	         function hotspot_audio_pause(url_counter)
+	        {
+	          document.getElementById("hotspot_sound_"+url_counter).pause();
+	          document.getElementById("hotspot_img_sound_pause_"+url_counter).style.display = "none";
+	          document.getElementById("hotspot_img_sound_play_"+url_counter).style.display = "inline-block";
+	        }
+
+	        //When audio is loaded
+	        function hotspot_audio_time(url_counter)
+	        {
+	        	var vid = document.getElementById("hotspot_sound_"+url_counter);
+				document.getElementById('hotspot_audio_duration_'+url_counter).value = vid.duration;
+	        }
+	        //When audio finishes playing
+	        function hotspot_audio_finish(url_counter)
+	        {
+	        	document.getElementById("hotspot_img_sound_pause_"+url_counter).style.display = "none";
+		        document.getElementById("hotspot_img_sound_play_"+url_counter).style.display = "inline-block";
+	        }
+	        //Video preview
+	        function hotspot_videoplayFile(obj,url_counter) 
+	        {
+	          var video_preview = document.getElementById('hotspot_video_preview_'+url_counter);
+            $("#hotspot_wapper_video_"+url_counter).css("margin-top", "108px");
+	          var reader = new FileReader();
+	          var video_parameter = "hotspot_videofile_"+url_counter;
+	          reader.onload = (function(video_parameter) {return function(e) {video_parameter.src = e.target.result;};})(video_preview);
+	          document.getElementById('hotspot_video_preview_'+url_counter).style.display = "inline";
+	          document.getElementById('video_hotspot_iframe_'+url_counter).style.display = "none";
+	          document.getElementById('hotspot_video_url_'+url_counter).value = "";
+	          reader.readAsDataURL(obj.files[0]);
+            $("#remove_video_hotspot_"+url_counter).show();
+            $("#hotspot_video_play_type_"+url_counter).show();
+            $("#hotspot_play_type_label_"+url_counter).show();
+            $(".hotspot_video_no_upload_"+url_counter).hide();
+	        }
+
+	        // Video Play/Pause  
+	        $('.hotspot_video').parent().click(function () 
+	        {
+	          if($(this).children(".hotspot_video").get(0).paused)
+	          {
+	            $(this).children(".hotspot_video").get(0).play();
+	            $(this).children(".hotspot_playpause").fadeOut();
+	          }
+	          else
+	          {
+	            $(this).children(".hotspot_video").get(0).pause();
+	            $(this).children(".hotspot_playpause").fadeIn();
+	          }
+	        });
+
+	        // When video ends
+		    function hotspot_video_Ended(url_counter)
+		    {
+		    	document.getElementById('hotspot_playpause_'+url_counter).style.display = "inline";
+		    }
+	         
+	        // Youtube Video Preview 
+	        function youtube_url_hotspot_iframe(url_counter)
+	        {
+	          document.getElementById('hotspot_videofile_'+url_counter).value = "";
+	          document.getElementById('hotspot_video_preview_'+url_counter).style.display = "none";
+	          var video_url= document.getElementById('hotspot_video_url_'+url_counter).value;
+	          document.getElementById('hotspot_url_youtube_'+url_counter).value = video_url;
+	          document.getElementById('video_hotspot_iframe_'+url_counter).innerHTML = video_url;
+	          document.getElementById('video_hotspot_iframe_'+url_counter).style.display = "inline";
+            $("#remove_video_hotspot_"+url_counter).show();
+            $("#hotspot_video_play_type_"+url_counter).show();
+            $("#hotspot_play_type_label_"+url_counter).show();
+            $(".hotspot_video_no_upload_"+url_counter).hide();
+	        }
+
+	        // Delete Video
+	        function delete_video_hotspot(url_counter)
+		  	{
+			  	// alert(url_counter);
+			  	document.getElementById('hotspot_videofile_'+url_counter).value = "";
+		      document.getElementById('hotspot_video_preview_'+url_counter).style.display = "none";
+		      document.getElementById('video_hotspot_iframe_'+url_counter).style.display = "none";
+		      document.getElementById('hotspot_video_url_'+url_counter).value = "";
+          $("#hotspot_wapper_video_"+url_counter).css("margin-top", "0px");
+		      $("#hotspot_video_play_type_"+url_counter).val("");
+          $(".hotspot_video_no_upload_"+url_counter).show();
+          $("#remove_video_hotspot_"+url_counter).hide();
+          $("#hotspot_video_play_type_"+url_counter).hide();
+          $("#hotspot_play_type_label_"+url_counter).hide();
+		  	}
+
+		  	// Delete Audio
+		  	function delete_audio_hotspot(url_counter)
+		  	{
+		  		document.getElementById("hotspot_audio_img_"+url_counter).style.display = "none";
+		  		document.getElementById('hotspot_audio_'+url_counter).value = "";
+		  		$("#hotspot_audio_play_type_"+url_counter).val("");
+		  		document.getElementById('hotspot_audio_drag_head_'+url_counter).style.display = "block";
+		        document.getElementById('hotspot_audio_'+url_counter).style.display = "inline";
+		        document.getElementById('remove_audio_hotspot_'+url_counter).style.display = "none";
+		        document.getElementById('hotspot_audio_play_type_div_'+url_counter).style.display = "none"; 
+		        document.getElementById('hotspot_audio_duration_'+url_counter).value = "";
+		  	}
+
+		    // Toggle function for hotspot box(All contents of hotspot functionality)
+		    function toggle_visibility(id) 
+		    {
+		      var e = document.getElementById(id);
+		      if(e.style.display == 'block')
+		        e.style.display = 'none';
+		      else
+		        e.style.display = 'block';
+		    }
+
+		    //On change function for home image choose file button for hotspot
+		    var loadFile = function(event) 
+		    {
+		      document.getElementById("output").style.display = "inline";
+		      var output = document.getElementById('output');
+		      $("#output").attr('src','');
+		      $("#output").attr('height','80%');
+		      // Preview of home image
+		      output.src = URL.createObjectURL(event.target.files[0]);
+		      var homeImage_name = event.target.files[0].name;
+		      sessionStorage.setItem("HomeImage_name", homeImage_name);
+		      var preview = document.getElementById("preview");
+		      preview.style.display = "inline";
+		      document.getElementById("notes").style.display ="inline";
+		      // Setting height of image for larger images
+		      output.onload = function() 
+		      {
+	            var width = output.width,
+	             height = output.height;
+	             if(height > 540)
+	             {
+	             	$("#output").attr('height','540px');
+	             }
+              };
+		    };
+		    
+		    // Called when stop button is clicked
+		    function stop_drawing()
+		    {
+		    	//Check whether rectangle is drawn or not
+		      if (!$('#rectangle').hasClass( "hotspot_present" )) 
+		      {
+  					alert('Please draw a rectangle for hotspot, then click "STOP DRAWING"');
+  			  }
+  			  else
+  			  {
+			      // To scroll bottom of the page
+			      $('html, body').animate({scrollTop:$(document).height()}, 'slow');
+			      // Getting coordinates of div 'rectangle'
+			      var element =  document.getElementById("rectangle");
+			      var rect = element.getBoundingClientRect();
+			      var div = document.getElementById("div_canvas");
+			      var div_elemt = div.getBoundingClientRect();
+			      //Getting offset
+			      var  offsetTop   = rect.top - div_elemt.top;
+			      var  offsetLeft   = rect.left - div_elemt.left;
+			      console.log( offsetTop,offsetLeft , rect.width-2, rect.height-2);
+
+			      // rectangle after stop drawing
+			      var div = document.getElementById("div_after_drawing");
+			      width = document.getElementById("output").width;
+			      height = document.getElementById("output").height;
+			      div.style.width = width+'px';
+			      div.style.height =height+'px';
+			      // Creating new rectangle div 
+			      var element = document.createElement('div');
+			      element.className = 'rectangle';
+			      element.id = 'rectangle_'+i;
+
+			      //Converting offsets in to %
+			      percentage_left = (offsetLeft/width)*100;
+			      percentage_top = (offsetTop/height)*100;
+			      percentage_width = ((rect.width-2)/width)*100;
+			      percentage_heigth = ((rect.height-2)/height)*100;
+
+			      // Assigning values to new rectangle div 
+			      element.title = 'Feature '+i;
+			      element.style.left = percentage_left + '%';
+			      element.style.top = percentage_top + '%';
+			      element.style.width = percentage_width +'%';
+			      element.style.height = percentage_heigth +'%';
+
+			      // Keeping values into session
+			      sessionStorage.setItem("Left_"+i, percentage_left);
+			      sessionStorage.setItem("Top_"+i, percentage_top);
+			      sessionStorage.setItem("width_"+i,percentage_width);
+			      sessionStorage.setItem("height_"+i,percentage_heigth);
+			      sessionStorage.setItem("Title_"+i,'Feature '+i);
+			      div.appendChild(element);
+			      var hotspot_image_or_video_flag;
+			      //Check whether radio button for images is checked
+			      if (document.getElementById('hotspot_images_'+sessionStorage.getItem("counter_hotspot")).checked) 
+			      {
+			      	hotspot_image_or_video_flag = 1;
+			      }
+			      //Check whether radio button for video is checked
+			      if (document.getElementById('hotspot_video_'+sessionStorage.getItem("counter_hotspot")).checked) 
+			      {
+			      	hotspot_image_or_video_flag = 0;
+			      }
+			      document.getElementById("interactivity_name").style.visibility = "visible"; 
+			      // Calls hotspot_moreFields() function only if 'i' is gearter than 1
+			      if(i>1)
+			        hotspot_moreFields();
+			      // If radio button for images is checked
+			      if(hotspot_image_or_video_flag==1)
+			      {
+			        $('#hotspot_images_'+(hotspot_counter-1)).prop("checked", true);
+			        $('#hotspot_images_'+(hotspot_counter)).prop("checked", false);
+			        $("#hotspot_select_video_"+hotspot_counter).css("display","none");
+			        $("#hotspot_select_images_"+hotspot_counter).css("display","none");
+			        // $("#hotspot_select_video_"+hotspot_counter-1).css("display","none");
+			        // $("#hotspot_select_images_"+hotspot_counter-1).css("display","none");
+			      }
+			       // If radio button for video is checked
+			      if(hotspot_image_or_video_flag==0)
+			      {
+			        $('#hotspot_video_'+(hotspot_counter-1)).prop("checked", true);
+			        $('#hotspot_video_'+(hotspot_counter)).prop("checked", false);
+			        $("#hotspot_select_video_"+hotspot_counter).css("display","none");
+			        $("#hotspot_select_images_"+hotspot_counter).css("display","none");
+			        // $("#hotspot_select_video_"+hotspot_counter-1).css("display","none");
+			        // $("#hotspot_select_images_"+hotspot_counter-1).css("display","none");
+			      }
+			      //Disable done buttons
+			      document.getElementById("audio_done_button_"+sessionStorage.getItem("counter_hotspot")).disabled = false;
+			      document.getElementById("video_done_button_"+sessionStorage.getItem("counter_hotspot")).disabled = false;
+			      document.getElementById("stop_draw").disabled = true;
+			      sessionStorage.setItem("no_of_counter",i);
+			      //increment "i"
+			      i++;
+			      document.getElementById("div_canvas").style.display = "none";
+			      document.getElementById("buttons").style.display = "none";
+			  }
+		    }
+
+		    //When Start drawing button is clicked
+		    function start_drawing() 
+		    {
+		      var width;
+		      var height;
+		      // Getting height and width of home image and assigning it to div_canvas
+		      var div = document.getElementById("div_canvas");
+		      div.style.display="inline";
+		      width = document.getElementById("output").width;
+		      height = document.getElementById("output").height;
+		      sessionStorage.setItem("HomeImage_width", width); 
+		      sessionStorage.setItem("HomeImage_height", height);
+		      div.style.width = width+'px';
+		      div.style.height =height+'px';
+		      //Function for mouse capture and drawing rectangles
+		      initDraw(document.getElementById('div_canvas'));
+		      //Disabling and enabling of buttons in hotspot
+		      document.getElementById("stop_draw").disabled = false;
+		      document.getElementById("start_draw").disabled = true;
+		      document.getElementById("submit_hotspot").disabled = true;
+		      document.getElementById("input_box").style.display="none";
+		      document.getElementById("text_header").style.display="none";
+		      document.getElementById("text_header_2").style.display="inline";
+		      document.getElementById("width_img_input").value= sessionStorage.getItem("HomeImage_width");
+		      document.getElementById("height_img_input").value= sessionStorage.getItem("HomeImage_height"); 
+		      // $(".delete_hotspot_button").prop("disabled",true); 
+		      // $("#hotspot_delete_image").attr("title", "Click on 'Done' button before you delete.");
+		      // $("#hotspot_delete_image").attr("alt", "Click on 'Done' button before you delete.");
+		      // To scroll up the page
+		      window.scrollTo(0,450);
+
+		    };
+
+		    //When Done button in interactivity is clicked
+		    function done_drawing(hotspot_counter) 
+		    {
+		      $("#hotspot_delete_image").attr("title", "Delete");
+		      $("#hotspot_delete_image").attr("alt", "Delete");
+		      $(".delete_hotspot_button").prop("disabled",false); 
+		      //Disabling and enabling buttons
+		      document.getElementById("add_hotspot").style.display = "inline";      
+		      document.getElementById("start_draw").disabled = false;
+		      document.getElementById("stop_draw").disabled = true;
+		      document.getElementById("audio_done_button_"+hotspot_counter).disabled = true;
+		      document.getElementById("video_done_button_"+hotspot_counter).disabled = true;
+		      //Getting values from session
+		      left_tag = sessionStorage.getItem("Left_"+count);
+		      top_tag = sessionStorage.getItem("Top_"+count);
+		      width_tag = sessionStorage.getItem("width_"+count);
+		      height_tag = sessionStorage.getItem("height_"+count);
+		      title_tag = sessionStorage.getItem("Title_"+count);
+
+		      //Array for deleted interactivity
+		      var deleted_items_hotspot = document.getElementById('deleted_hotspot').value;
+		      var deleted_items = 0;
+		      if(deleted_items_hotspot != "")
+		      {
+		        var deleted_items_array = deleted_items_hotspot.split(",");
+		        deleted_items = deleted_items_array.length;
+		      }
+		      //Creating Map code
+		      anchor_tag = sessionStorage.getItem("Anchor_tag");  
+		      anchor_tag = anchor_tag+'<a href="'+BASE_URL+'?id='+product_id+'&hotspot='+(count - deleted_items)+'" class="image_map" title="'+title_tag+'" style="position: absolute; left:'+left_tag+'%; top:'+top_tag+'%; width:'+width_tag+'%; height:'+height_tag+'%; z-index: 2;"></a>';
+
+		      sessionStorage.setItem("Anchor_tag", anchor_tag);
+		      document.getElementById("anchor_tag_input").value = anchor_tag ;
+
+		      // alert(res);
+		      document.getElementById("submit_hotspot").disabled = false;
+		      sessionStorage.setItem("count", count);
+		      document.getElementById("no_of_hotspot_input").value = count;  
+		      //Close current accordian
+		      if($('#hotspot_accordian_'+hotspot_counter).hasClass('active'))  // Returns true if the class exist.
+		      {
+		        $('#hotspot_accordian_'+hotspot_counter).removeClass("active");
+		        $('#hotspot_panel_'+hotspot_counter).removeClass("show");
+		      }  
+		      count++;
+		    }
+
+		    //Add more hotspot button is clicked
+		    function add_more_hotspot()
+		    {
+		      document.getElementById("submit_hotspot").disabled = true;
+		      document.getElementById("buttons").style.display = "inline";
+		      document.getElementById("add_hotspot").style.display = "none";
+		      // To scroll up the page
+		      window.scrollTo(0,345);
+		    }
+
+		    //Function for Drawing rectangle 
+		    function initDraw(div_canvas) 
+		    {
+		      var mouse = {x: 0, y: 0, startX: 0, startY: 0 };
+		      //Setting mouse coordinates
+		      function setMousePosition(e) 
+		      {
+		        var ev = e || window.event; //Moz || IE
+		        // console.log('Event: ', ev);
+		        if (ev.pageX) 
+		        { //Moz
+		          mouse.x = ev.pageX + window.pageXOffset;
+		          mouse.y = ev.pageY + window.pageYOffset;
+		        } 
+		        else if (ev.clientX) 
+		        { //IE
+		          mouse.x = ev.clientX + document.body.scrollLeft;
+		          mouse.y = ev.clientY + document.body.scrollTop;
+		        }
+		        // window.scrollTo(0,240);
+		        window.scrollTo(0,345);
+		      };
+
+		      var element = null;    
+		      div_canvas.onmousemove = function (e) 
+		      {
+		        setMousePosition(e);
+		        if (element !== null) 
+		        {
+		          element.style.width = Math.abs(mouse.x - mouse.startX) + 'px';
+		          element.style.height = Math.abs(mouse.y - mouse.startY) + 'px';
+		          element.style.left = (mouse.x - mouse.startX < 0) ? mouse.x-325 + 'px' : mouse.startX-325 + 'px';
+		          element.style.top = (mouse.y - mouse.startY < 0) ? mouse.y-730 + 'px' : mouse.startY-730 + 'px';
+		          element.classList.add("hotspot_present");
+		        }
+		      }
+		      div_canvas.onmousedown = function (e) 
+		      {
+		        if (element !== null) 
+		        {
+		          // element = null;
+		          // div_canvas.style.cursor = "default";
+		          // console.log("finsihed.");
+		        } 
+		        else 
+		        {
+		          //Start Drawing rectangle when mouse is dragged
+		          document.getElementById("div_canvas").innerHTML = "";
+		          console.log("begun.");
+		          mouse.startX = mouse.x;
+		          mouse.startY = mouse.y;
+		          element = document.createElement('div');
+		          element.className = 'rectangle';
+		          element.id = 'rectangle';
+		          element.style.left = mouse.x + 'px';
+		          element.style.top = mouse.y+ 'px';
+		          div_canvas.appendChild(element);
+		          div_canvas.style.cursor = "crosshair";
+		          //Stop Drawing rectangle when mouse is up
+		          div_canvas.onmouseup = function (e) 
+		          {
+		            div_canvas.style.cursor = "default";
+		            element = null;
+		            console.log("finsihed.");
+		          }
+		        }
+		      }
+		    }
+
+		    //On change function when button color is entered
+		    function customize_button()
+		    {
+		      var button_color = document.getElementById('button_color').value;
+		      document.getElementById('button_color_interactivity').value = button_color;
+		      document.getElementById('button_color_hotspot').value = button_color;
+		    }
+
+		    //On change function when text color is entered
+		    function customize_text()
+		    {
+		      var text_color = document.getElementById('text_color').value;
+		      document.getElementById('text_color_interactivity').value = text_color;
+		      document.getElementById('text_color_hotspot').value = text_color;
+		    }
+		    
+		    //On change function when band color is entered
+		    function customize_band()
+		    {
+		      var band_color = document.getElementById('band_color').value;
+		      document.getElementById('band_color_interactivity').value = band_color;
+		      document.getElementById('band_color_hotspot').value = band_color;
+		    }
+
+		    //On change function when zoom button is selected
+		    function customize_zoom()
+		    {
+		    	var zoom_button = document.getElementById('zoom_button').value;
+		        document.getElementById('zoom_button_type').value = zoom_button;      
+		    }
+
+		    // On change function when title is changed.
+		    function Set_Title(url_counter)
+		    {
+		   		var hotspot_count = sessionStorage.getItem("counter_hotspot");
+		   		var title_hotspot = document.getElementById("hotspot_title_"+url_counter).value;
+		   		sessionStorage.setItem("Title_"+(url_counter+1),title_hotspot);
+		   		// Check whether done button is clicked or not 
+		        if((!$('#audio_done_button_'+hotspot_count).is(':disabled')) || (!$('#video_done_button_'+hotspot_count).is(':disabled')) )
+		        {
+		        	if(hotspot_count == url_counter)
+		   			{
+		        		$("#rectangle_"+(url_counter+1)).attr('title', title_hotspot);
+		        	}
+		        	else
+		        	{
+		        		var total_hotspot = document.getElementById('hotspot_interactivity_counter').value;
+			          	var count_hotspot = 0;
+			          	var anchor_tag_hotspot = "";
+
+			          	// Setting Map Code
+			          	for (var i = 0; i < total_hotspot; i++) 
+			          	{ 
+			            	if(jQuery.inArray(i,deleted_hotspot) < 0)
+			            	{
+			            		count_hotspot++;
+			                   	var left_tag = sessionStorage.getItem("Left_"+(i+1));
+				              	var top_tag = sessionStorage.getItem("Top_"+(i+1));
+				              	var width_tag = sessionStorage.getItem("width_"+(i+1));
+				              	var height_tag = sessionStorage.getItem("height_"+(i+1));
+				              	var title_tag = sessionStorage.getItem("Title_"+(i+1));
+				              	$("#rectangle_"+(i+1)).attr('title', title_tag);
+
+				              	anchor_tag_hotspot = anchor_tag_hotspot+'<a href="'+BASE_URL+'?id='+product_id+'&hotspot='+count_hotspot+'" class="image_map" title="'+title_tag+'" style="position: absolute; left:'+left_tag+'%; top:'+top_tag+'%; width:'+width_tag+'%; height:'+height_tag+'%; z-index: 2;"></a>';
+				              	sessionStorage.setItem("Anchor_tag", anchor_tag_hotspot);
+				              	document.getElementById("anchor_tag_input").value= anchor_tag_hotspot ;
+				              	// alert(anchor_tag_hotspot);
+			        		}
+			        	}
+		        	}
+		        }
+	        	else
+	        	{
+		          	// alert(deleted_hotspot);
+		          	var total_hotspot = document.getElementById('hotspot_interactivity_counter').value;
+		          	var count_hotspot = 0;
+		          	var anchor_tag_hotspot = "";
+
+		          	// Setting Map Code
+		          	for (var i = 0; i < total_hotspot; i++) 
+		          	{ 
+		            	if(jQuery.inArray(i,deleted_hotspot) < 0)
+		            	{
+		            		count_hotspot++;
+		                   	var left_tag = sessionStorage.getItem("Left_"+(i+1));
+			              	var top_tag = sessionStorage.getItem("Top_"+(i+1));
+			              	var width_tag = sessionStorage.getItem("width_"+(i+1));
+			              	var height_tag = sessionStorage.getItem("height_"+(i+1));
+			              	var title_tag = sessionStorage.getItem("Title_"+(i+1));
+			              	$("#rectangle_"+(i+1)).attr('title', title_tag);
+
+			              	anchor_tag_hotspot = anchor_tag_hotspot+'<a href="'+BASE_URL+'?id='+product_id+'&hotspot='+count_hotspot+'" class="image_map" title="'+title_tag+'" style="position: absolute; left:'+left_tag+'%; top:'+top_tag+'%; width:'+width_tag+'%; height:'+height_tag+'%; z-index: 2;"></a>';
+			              	sessionStorage.setItem("Anchor_tag", anchor_tag_hotspot);
+			              	document.getElementById("anchor_tag_input").value= anchor_tag_hotspot ;
+			              	// alert(anchor_tag_hotspot);
+		        		}
+		        	}
+		        }
+		    }
+	    </script>
+  <!-- Hotspot Interactivity Script end - Reethu -->
+</body>

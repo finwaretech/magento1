@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Finwaretech_Save>
+			<version>0.1.0</version>
+		</Finwaretech_Save>
+	</modules>
+	  <global>
+        <!-- We need model -->
+        <models>
+            <Finwaretech_Save>
+                <class>Finwaretech_Save_Model</class>
+            </Finwaretech_Save>
+        </models>
+        <!-- We need helper -->
+        <helpers>
+            <Finwaretech_Save>
+                <class>Finwaretech_Save_Helper</class>
+            </Finwaretech_Save>
+        </helpers>
+    </global>
+	 <frontend>
+        <routers>
+            <save>
+                <use>standard</use>
+                <args>
+                    <module>Finwaretech_Save</module>
+                    <frontName>save</frontName>
+                </args>
+            </save>
+        </routers>
+        
+        <layout>
+    		<updates>
+	    		<save>
+	    			<file>save.xml</file>
+	    		</save>
+	    	</updates>
+    	</layout>
+	</frontend>
+</config>

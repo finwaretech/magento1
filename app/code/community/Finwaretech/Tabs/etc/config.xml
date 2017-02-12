@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Finwaretech_Tabs>
+            <version>1.0.0</version>
+        </Finwaretech_Tabs>
+    </modules>
+    <global>
+        <helpers>
+            <Finwaretech_Tabs>
+                <!-- Helper definition needed by Magento -->
+                <class>Mage_Core_Helper</class>
+            </Finwaretech_Tabs>
+        </helpers>
+    </global>
+    <admin>
+        <routers>
+            <adminhtml>
+                <args>
+                    <modules>
+                        <foo_bar before="Mage_Adminhtml">Finwaretech_Tabs_Adminhtml</foo_bar>
+                    </modules>
+                </args>
+            </adminhtml>
+        </routers>
+    </admin>
+</config>

@@ -1,0 +1,461 @@
+
+
+<?php
+
+    function curPageURL() 
+
+    {
+
+        $pageURL = 'http';
+
+        if ($_SERVER["HTTPS"] == "on") {$pageURL .= "s";}
+
+        $pageURL .= "://";
+
+        if ($_SERVER["SERVER_PORT"] != "80") {
+
+        $pageURL .= $_SERVER["SERVER_NAME"].":".$_SERVER["SERVER_PORT"].$_SERVER["REQUEST_URI"];
+
+        } else {
+
+        $pageURL .= $_SERVER["SERVER_NAME"].$_SERVER["REQUEST_URI"];
+
+        }
+
+        return $pageURL;
+
+    }
+
+
+
+    $curUrl = curPageURL();
+
+    $pos = strpos($curUrl, "index.php");
+
+
+
+    // Note our use of ===.  Simply == would not work as expected
+
+    // because the position of 'a' was the 0th (first) character.
+
+    if ($pos === false) {
+
+    //echo "The string '$findme' was not found in the string '$mystring'";
+
+    } else {
+
+    //echo "The string '$findme' was found in the string '$mystring'";
+
+    //echo " and exists at position $pos";
+
+    $newUrl = str_replace("index.php/", "", $curUrl);
+
+    header("Location: $newUrl");
+
+    exit;
+
+    }
+
+?>
+
+
+
+<?php 
+
+    //product id;
+
+    $_product = $this->getProduct(); 
+
+    $product_id=$_product->getId();
+
+
+
+    // Checking whether product have interactivity or not
+
+    $connection = Mage::getSingleton('core/resource')->getConnection('finware_index');
+
+    $result = $connection->fetchAll("SELECT active FROM finware_index where product_id = $product_id");
+
+
+
+    $chk_enable = $result[0]['active'];
+
+    // Click to Interact Button
+
+    if($chk_enable == 'Yes')
+    {  // Checking whether product have interactivity or not
+
+
+
+    $connection2 = Mage::getSingleton('core/resource')->getConnection('oc_product_customize');
+
+    $result = $connection2->fetchAll("SELECT zoom_button FROM oc_product_customize where product_id = $product_id");
+
+    $zoom_button = $result[0]['zoom_button'];
+
+?>
+
+
+
+<script type="text/javascript">
+
+// var id="599";//id of the product
+
+var id = <?php echo($product_id)?>;
+
+
+
+var BASE_URL='<?php echo Mage::getUrl('work/admin/page');?>';
+
+// alert(BASE_URL);
+
+</script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+<!-- <script src="https://www.3dwebcommerce.com/FilesForEasyMath/script.js"></script> -->
+
+<!-- <link rel='stylesheet' href='https://www.3dwebcommerce.com/FilesForEasyMath/style.css' type='text/css'/> -->
+
+
+
+
+
+<script type="text/javascript">
+
+
+
+	$(function() 
+
+	{
+
+	    $('#animated_image').attr("src", "https://www.3dwebcommerce.com/FilesForEasyMath/Gifs/"+id+".gif");//investgate and delete
+
+	    $('body').on('click','.closePopup', function() 
+
+		{
+
+	    	$('.action input').css({backgroundColor: '#7c7c7c;',color: '#e6e6e6;'}).fadeOut(300, function()
+
+	    	{
+
+	        	$('.popupElement').remove()
+
+	        });
+
+	    });
+
+
+
+	    $('.seedemo').click(function(e)  //Call this when Click to interact button is clicked
+
+	    {
+
+			// var id=599;
+
+		    // Responsive code Raghav
+
+	    	var width,height,real_width,real_height,height_to_width,width_to_height;
+
+	    	real_width=768;
+
+	    	real_height=512;
+
+	    	// real_width=parseInt(<?php echo $width;?>);
+
+	    	// real_height=parseInt(<?php echo $height;?>);
+
+	    	// alert(real_width+":"+real_height);window.innerWidth;
+
+	    	var height_cal = $(window).height();
+
+	    	var width_cal = $(window).width(); 
+
+	    	// alert(width_cal+":"+height_cal);
+
+
+
+	    	if(height_cal<=width_cal)
+
+	    	{
+
+		      	height_cal= (height_cal-(height_cal*0.1))-120;
+
+		      	width_to_height=real_width/real_height;
+
+		      	width_cal=width_to_height*height_cal;
+
+	    	}
+
+
+
+	    	if(height_cal>width_cal)
+
+	    	{
+
+		      	width_cal= width_cal-(width_cal*0.3);
+
+		      	height_to_width=real_height/real_width;
+
+		      	height_cal=height_to_width*width_cal;
+
+	    	}
+
+
+
+	        // alert(width_cal+":"+height_cal);
+
+	    	if(width_cal>800)
+
+	      	width_cal=800;
+
+
+
+	    	if(height_cal>=600)
+
+	      	height_cal=600;
+
+
+
+	        // Responsive code Raghav
+
+
+
+	        e.preventDefault();
+
+	        var overlayy = $('<div/>').addClass('overlay').addClass('popupElement');
+
+	        $('body').append(overlayy);
+
+	        var popup = $('<div/>').addClass('popup').addClass('popupElement').css({left: '-999px'});
+
+
+
+	        var html = '<iframe src="'+BASE_URL+'?id='+id+'&ro=1&responsive=1&width='+width_cal+'px&height='+height_cal+'px&zoom_button=<?php echo $zoom_button; ?>" name="iframe2" id="iframe2" frameborder="0" scrolling="no" style="width:98.5%; height:98.5%" overflow="hidden" overflow-y="hidden" seamless="seamless" marginwidth="0" marginheight="0" onload="" allowtransparency="false"></iframe><div class="action"><input type="button" value="&#215;" class="closePopup"/ style="margin-top:-7px;width:45px;opacity:1;height:20px;"></div>';
+
+
+
+	        // '<iframe src="https://www.3dwebcommerce.com/Separatefromopencart/index.php?id='+id+'&ro=1&responsive=1&width='+width_cal+'px&height='+height_cal+'px" name="frame2" id="frame2" frameborder="0" scrolling="no" overflow="hidden" overflow-y="hidden" seamless="seamless" marginwidth="0" marginheight="0" onload="" allowtransparency="false"></iframe><div class="action"><input type="button" value="&#215;" class="closePopup"/ style="margin-top:-7px;width:45px;opacity:1;height:20px;"></div>'
+
+
+
+	     	// <?php echo Mage::getUrl('add/interactivity/interact',array('_secure'=>true, 'id'=>id, 'ro'=>1, 'responsive'=>1, 'width'=>width_cal.'px', 'height'=>height_cal.'px')); ?>
+
+
+
+	        popup.html(html);
+
+			$('body').append(popup); 
+
+	        var top =4;
+
+	        var width =  width_cal;
+
+	        var height = height_cal+109;
+
+	        var left = ($(window).width()-width)/2;
+
+	        left-=20;
+
+	    	popup.css({left: left + 'px', top: top + 'px', width: width + 'px', height: height + 'px'});
+
+
+
+	    });
+
+    });  
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<!-- <script src="<?php echo Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_WEB).'skin/js/click_to_interact/script.js'?>" type="text/javascript"></script> -->
+
+
+
+<style type="text/css">
+
+	.style_for_button
+
+	{
+
+		background-color: #a46497;
+
+	   	border-radius: 8px; 
+
+	   	font-size: large;
+
+	   	color: #fff;
+
+	    -webkit-font-smoothing: antialiased;
+
+	   	margin-left: 5px;
+
+	   	border:none
+
+	}
+
+	.overlay 
+
+    {
+
+        background: #999;
+
+        position: absolute;
+
+        left: 0;
+
+        right: 0;
+
+        bottom: 0;
+
+        top: 0;
+
+        opacity: 0.55;
+
+        filter: alpha(opacity=95);
+
+        z-index: 10000;
+
+        height: 1600px;
+
+        width: 100%;
+
+    }        
+
+    .popup 
+
+    {
+
+        background: #fff;
+
+        border-radius: 10px;
+
+        padding: 9px;
+
+        position: fixed;
+
+        z-index: 10010;
+
+        border: 10px solid #fdb233;
+
+    }  
+
+    .popup div.action input 
+
+    { 
+
+        background: transparent;
+
+        color: #FB0000;
+
+        border: 0px;
+
+        margin-top:-17px !important;
+
+        width:70px !important;
+
+        opacity:1 !important;
+
+        height:40px !important;
+
+    }        
+
+    .closePopup
+
+    {
+
+        font-size: 30px;
+
+        line-height: .5;
+
+        position: absolute;
+
+        /*top: 17px;*/
+
+        /*right: 14px;*/ 
+
+        top: 19px;/*Default 17px Jithin Modified on 22 Jan 2016 as per INW-1 [JIRA]*/
+
+        right: 4px;/*Default 14px Jithin Modified on 22 Jan 2016 as per INW-1 [JIRA]*/
+
+        color: #aaa;
+
+        text-shadow: 0 -1px 1px rbga(0,0,0,.6);
+
+        font-weight: bold;
+
+        cursor: pointer;
+
+    }
+
+    iframe 
+
+    {
+
+        position: absolute;
+
+        top: 0;
+
+        bottom: 0;
+
+        left: 0;
+
+        right: 0;
+
+        height: 100%;
+
+        width: 100%;
+
+        border-radius: 15px;
+
+        padding: 5px; 
+
+    }
+
+  	#interactivity_0,#interactivity_1,#interactivity_3
+
+  	{
+
+    	border-radius: 3px;
+
+  	}
+
+</style>
+
+
+
+
+
+<?php
+
+
+
+    $buttonTitle = $this->__('Click to interact'); 
+
+?>
+
+<!-- <?php //if($_product->isSaleable()): ?> -->
+
+
+
+    <div class="add-to-cart">
+
+        <button style="padding-left: 5%" type="button" title="<?php echo $buttonTitle ?>" class="seedemo single_add_to_cart_button alt button btn-cart" ><span><span>
+
+        <?php echo $buttonTitle ?></span></span></button>
+
+        <?php echo $this->getChildHtml('', true, true) ?>
+
+    </div>
+
+<?php } ?>
+

@@ -1,0 +1,39 @@
+<h1>Confirmation page</h1>
+<?php
+
+$productId = $this->getRequest()->getParam('id');
+
+ $_item = Mage::getModel('catalog/product')->getCollection()
+    ->addAttributeToSelect('product_url')
+    ->addAttributeToFilter('entity_id', $productId)
+    ->addUrlRewrite()
+    ->load();
+
+foreach($_item as $product){
+?>
+<form>
+<p>The interactivies/hotspots have been created successfully!!</p>
+<input type="submit" class="button button_effect" name="preview" value="View Product" formaction="<?php echo $product->getProductUrl(); ?>" />
+<input type="submit" class="button button_effect" name="home" value="Home" formaction="<?php echo $this->getUrl("web/admin/page") ?>">
+</form>
+<?php 
+}
+?>
+
+<style type="text/css">
+	.button {
+    background-color: #008CBA; 
+    border: none;
+    color: white;
+    padding: 10px 22px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.button_effect:hover:active{
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+</style>

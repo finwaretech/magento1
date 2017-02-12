@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<layout version="0.1.0">
+	<work_admin_page>
+<reference name="root">
+    <action method="setTemplate"><template>work/blank.phtml</template></action>
+</reference>
+ <reference name="content">
+            <block type="catalog/product_list" name="product_list" template="catalog/product/index.phtml">
+            </block>
+        </reference>
+	</work_admin_page>
+</layout>

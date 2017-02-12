@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<modules>
+		<Finwaretech_Hotspot>
+			<version>0.1.0</version>
+		</Finwaretech_Hotspot>
+	</modules>
+	  <global>
+        <!-- We need model -->
+        <models>
+            <Finwaretech_Hotspot>
+                <class>Finwaretech_Hotspot_Model</class>
+            </Finwaretech_Hotspot>
+        </models>
+        <!-- We need helper -->
+        <helpers>
+            <Finwaretech_Hotspot>
+                <class>Finwaretech_Hotspot_Helper</class>
+            </Finwaretech_Hotspot>
+        </helpers>
+    </global>
+	 <frontend>
+        <routers>
+            <hotspot>
+                <use>standard</use>
+                <args>
+                    <module>Finwaretech_Hotspot</module>
+                    <frontName>hotspot</frontName>
+                </args>
+            </hotspot>
+        </routers>
+        
+        <layout>
+    		<updates>
+	    		<hotspot>
+	    			<file>hotspot.xml</file>
+	    		</hotspot>
+	    	</updates>
+    	</layout>
+	</frontend>
+</config>

@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Finwaretech_Database>
+            <version>0.1.0</version>
+        </Finwaretech_Database>
+    </modules>
+    <frontend>
+        <routers>
+            <database>
+                <use>standard</use>
+                <args>
+                    <module>Finwaretech_Database</module>
+                    <frontName>database</frontName>
+                </args>
+            </database>
+        </routers>
+        <layout>
+            <updates>
+                <database>
+                    <file>database.xml</file>
+                </database>
+            </updates>
+        </layout>
+    </frontend>  
+    <global>
+        <models>
+            <database>
+                <class>Finwaretech_Database_Model</class>
+                <resourceModel>database_mysql4</resourceModel>
+            </database>
+            <database_mysql4>
+                <class>Finwaretech_Database_Model_Mysql4</class>
+                <entities>
+                    <finware_index>  <!-- 1 -->
+                        <table>finware_index</table>
+                    </finware_index>
+
+                      <oc_product_categories> <!-- 2 -->
+                        <table>oc_product_categories</table>
+                    </oc_product_categories>
+
+                    <oc_product_color> <!-- 3 -->
+                        <table>oc_product_color</table>
+                    </oc_product_color>
+
+                    <oc_product_customize> <!-- 4 -->
+                        <table>oc_product_customize</table>
+                    </oc_product_customize>
+
+                    <oc_product_hotspot> <!-- 5 -->
+                        <table>oc_product_hotspot</table>
+                    </oc_product_hotspot>
+
+                    <oc_product_interactivity> <!-- 6 -->
+                        <table>oc_product_interactivity</table>
+                    </oc_product_interactivity>
+
+                    <oc_product_pattern> <!-- 7 -->
+                        <table>oc_product_pattern</table>
+                    </oc_product_pattern>
+
+                    <oc_product_pattern1> <!-- 8 -->
+                        <table>oc_product_pattern1</table>
+                    </oc_product_pattern1>
+
+                        <oc_product_troubleshoot_type> <!-- 9 -->
+                        <table>oc_product_troubleshoot_type</table>
+                    </oc_product_troubleshoot_type>
+                    
+                </entities>
+            </database_mysql4>
+        </models>
+        <resources>
+            <database_setup>
+                <setup>
+                    <module>Finwaretech_Database</module>
+                </setup>
+                <connection>
+                    <use>core_setup</use>
+                </connection>
+            </database_setup>
+            <database_write>
+                <connection>
+                    <use>core_write</use>
+                </connection>
+            </database_write>
+            <database_read>
+                <connection>
+                    <use>core_read</use>
+                </connection>
+            </database_read>
+        </resources>
+        <blocks>
+            <database>
+                <class>Finwaretech_Database_Block</class>
+            </database>
+        </blocks>
+        <helpers>
+            <database>
+                <class>Finwaretech_Database_Helper</class>
+            </database>
+        </helpers>
+    </global>
+</config> 
